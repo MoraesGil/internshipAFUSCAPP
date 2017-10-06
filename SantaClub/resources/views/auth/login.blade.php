@@ -49,8 +49,8 @@
               <br />
 
               <div>
-                <h1><i class="fa fa-cubes"></i> Pedido Online</h1>
-                <p>@include('direitos')</p>
+                <h1><i class="fa fa-cubes"></i>SantaClub</h1>
+                <p>@include('layouts.parts.direitos')</p>
               </div>
             </div>
           </form>

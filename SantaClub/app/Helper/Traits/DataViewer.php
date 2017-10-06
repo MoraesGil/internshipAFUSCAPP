@@ -1,101 +1,105 @@
 <?php
+/*
+* @author Gilberto Prudêncio Vaz de Moraes
+* @copyright Copyright (c) 2017
+* @license MIT
+* @category PHP Trait
+* @version [1.2]
+* @date     2017-10-55
+*/
 namespace App\Helper\Traits;
 
 use Validator;
 
-trait DataViewer
-{
-  protected $searchColumns = [];
+trait DataViewer {
 
-  protected $paginationLimitDefault = 5;
+  protected $dv_columns           = null;
+  protected $dv_searchableColumns = [];
 
-  private $validator_messages = [
+  private $validator_messages     = [
     'column.in' => 'Nome de coluna inválida',
     'direction.in' => 'A direção precisa ser asc ou desc',
   ];
 
-  public function DataViewerData($request){
-    return collect(['columns'=>$this->getColumns()])->merge($this->scopeSearchPaginateAndOrder($request));
+  /**
+  * [gm - loadQueryColumns]
+  * This load coumuns and searchable columns from query first result,
+  * and protected dv_config [name:string,label:string,search:boolean]
+  *
+  * @param  [Illuminate/Database/Query/Builder] $query
+  * @return [Boolean]
+  */
+  private function loadQueryColumns($query, $loadSearchables = true){
+    if (!$query)
+    $query = parent::newQuery();
+    $first = $query->first();
+    if ($first) {
+      $dvConfig = [];
+      if (isset($this->dv_config) && is_array($this->dv_config))
+      $dvConfig = $this->dv_config;
+      $this->dv_columns = collect($first)->map(function($val,$key) use ($dvConfig,$loadSearchables) {
+        $label = $key;
+        foreach ($dvConfig as $value) {
+          if (isset($value["name"]) && $value["name"] == $label) {
+            if (isset($value["label"]))
+            $label = $value["label"];
+            if ($loadSearchables && isset($value["search"]) && $value["search"] == true && !in_array($key, $this->dv_searchableColumns))
+            $this->dv_searchableColumns[]= $key;
+          }
+        }
+        return $label;
+      })->toArray();
+      return true;
+    }
+    return false;
   }
 
-  public function scopeSearchPaginateAndOrder($request)
-  {
-    $query = parent::newQuery();
-    // dd($request->only([ 'column', 'direction' ]));
+  /**
+   * [mergeColumnsPaginate description]
+   * @param  [type] $pagination [description]
+   * @return [type]             [description]
+   */
+  private function mergeColumnsPaginate($pagination){
+    return collect(['columns'=>$this->dv_columns])->merge($pagination);
+  }
+
+ /**
+  * [gm - DataViewerData description]
+  * @param [Illuminate\Http\Request]  $request  [required]
+  * @param [Illuminate/Database/Query/Builder]  $query    [optional custom querybuilder]
+  * @param boolean $paginate [default true]
+  */
+  public function DataViewerData($request, $query = null,$paginate = true) {
+    if (!$this->loadQueryColumns($query))
+    return null;
     $v =  Validator::make($request->only([
       'column',
       'direction',
       'search_term'
-    ]), [
-      'order_column' =>'nullable|alpha_dash|in:'.implode(',', $this->getOriginalTableColumns()),
+    ]),[
+      'order_column' =>'nullable|alpha_dash|in:'.implode(',',$this->dv_columns),
       'order_direction'=>'nullable|in:asc,desc',
       'search_term'=>'nullable',
     ], $this->validator_messages);
 
-    if ($v->fails()) {
-      return $v->errors()->all();
-    }
+    if ($v->fails())
+    return $v->errors()->all();
 
-    //get exemplo ?order_column=med_id&order_direction=asc&search_term=sobrinho
-    //set default
-    $orderColumn = $request->order_column ? $request->order_column : head($this->getOriginalTableColumns());
+    $orderColumn    = $request->order_column ? $request->order_column : key($this->dv_columns);
     $orderDirection = $request->order_direction ? $request->order_direction : 'desc';
-    $searchTerm = strtolower($request->search_term ? $request->search_term:"");
-    $this->dataViewerConfig = isset($this->dataViewerConfig) ?    $this->dataViewerConfig : [];
+    $searchTerm     = strtolower($request->search_term ? $request->search_term:"");
 
-    return
-    $query->orWhere(function ($query) use ($searchTerm) {
-      foreach ($this->getSearchableColumns() as $searchColumn) {
-        //oracle
-        // $query->orWhereRaw('LOWER(cast ('.$searchColumn.' as varchar(255))) like ?', ['%'.$searchTerm.'%']);
+    if ($searchTerm !="")
+    $query = $query->where(function ($q) use ($searchTerm) {
+      foreach ($this->dv_searchableColumns as $searchColumn) {
         //mysql
-        $query->orWhere($searchColumn,'like', '%'.$searchTerm.'%');
+        $q->orWhereRaw('LOWER('.$searchColumn.') like ?', ['%'.$searchTerm.'%']);
+        //oracle
+        // $query->orWhere($searchColumn,'ilike', '%'.$searchTerm.'%');
       }
-    })
-    ->orderBy($orderColumn, $orderDirection)
-    ->paginate($this->paginationLimitDefault);
-    // dd($query->toSql());
-  }
-
-  public function getOriginalTableColumns()
-  {
-    if ($this->columnsCache && is_array($this->columnsCache)) {
-      return $this->columnsCache;
-    }
-    $this->columnsCache = $this->getConnection()->getSchemaBuilder()->getColumnListing($this->getTable());
-    return $this->getOriginalTableColumns();
-  }
-
-  // [0=>label,1=searcheble]
-  private function getSearchableColumns(){
-    if (isset($this->dataViewerConfig) && is_array($this->dataViewerConfig)) {
-      return array_keys(array_where($this->dataViewerConfig, function ($value, $key) {
-        return isset($value[1]) && in_array($key,$this->getOriginalTableColumns())  ? $value[1] : false;
-      }));
-    }else {
-      return [];
-    }
-  }
-
-  private function getDataViwerColumnsAttribute()
-  {
-    return $this->getColumns();
-  }
-
-  private function getColumns()
-  {
-    $originalColumns = array_flip($this->getOriginalTableColumns());
-    $arrayableItems = $this->getArrayableItems($originalColumns);
-    $arrayableItems = array_merge($arrayableItems, $this->getArrayableAppends());
-
-    //pega os labels
-    foreach ($arrayableItems as $key => $value) {
-      if (array_key_exists($key, $this->dataViewerConfig)) {
-        $arrayableItems[$key] = $this->dataViewerConfig[$key][0] ? $this->dataViewerConfig[$key][0] : $key ;
-      } else {
-        $arrayableItems[$key] = $key;
-      }
-    }
-    return $arrayableItems;
+    });
+    // dd($query->toSql()); //if want see sql uncomment this line
+    $query = $query->orderBy($orderColumn, $orderDirection);
+    return $paginate ? $this->mergeColumnsPaginate($query->paginate($this->dv_pagination_limit ? $this->dv_pagination_limit : 5)) : $query;
   }
 }

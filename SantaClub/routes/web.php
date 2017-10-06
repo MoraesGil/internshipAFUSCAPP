@@ -14,28 +14,28 @@
 
 Auth::routes();
 
-Route::get('/', 'HomeController@index');
-Route::get('/home', 'HomeController@index');
+
 
 Route::get('/error/{log}', function ($log) {
   dd(decrypt($log));
 });
 
+  Route::get('/', 'HomeController@index');
 
 Route::group(['middleware' => 'auth'], function () {
 
-  Route::get('/clientes', 'ClientController@index')->name('clientes');
-  Route::get('/pedidos', 'PedidoController@index')->name('pedidos');
+  Route::group([
+    'prefix' => 'movimentacoes',
+  ], function() {
 
+     Route::get('/', 'MovimentacoesController@getData');
 
-  Route::get('/produtos', 'ProductController@index')->name('produtos');
-
-  Route::group(['prefix' => 'api/produtos', 'as'=>'api.produto.'], function () {
-    Route::get('index', ['uses'=>'ProductController@getData', 'as'=>'index']);
-    Route::post('store', ['uses'=>'ProductController@store', 'as'=>'store']);
-    Route::put('update', ['uses'=>'ProductController@update', 'as'=>'update']);
-    Route::delete('delete', ['uses'=>'ProductController@delete', 'as'=>'delete']);
   });
+
+
+
+  Route::get('/home', 'HomeController@index');
+
 });
 
 
