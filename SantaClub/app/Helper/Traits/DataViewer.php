@@ -49,7 +49,7 @@ trait DataViewer {
         }
         return $label;
       })->toArray();
-      return true;
+      return $query;
     }
     return false;
   }
@@ -70,7 +70,8 @@ trait DataViewer {
   * @param boolean $paginate [default true]
   */
   public function DataViewerData($request, $query = null,$paginate = true) {
-    if (!$this->loadQueryColumns($query))
+    $query = $this->loadQueryColumns($query);
+    if (!$query)
     return null;
     $v =  Validator::make($request->only([
       'column',
@@ -98,6 +99,7 @@ trait DataViewer {
         // $query->orWhere($searchColumn,'ilike', '%'.$searchTerm.'%');
       }
     });
+
     // dd($query->toSql()); //if want see sql uncomment this line
     $query = $query->orderBy($orderColumn, $orderDirection);
     return $paginate ? $this->mergeColumnsPaginate($query->paginate($this->dv_pagination_limit ? $this->dv_pagination_limit : 5)) : $query;
