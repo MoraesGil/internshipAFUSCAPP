@@ -4,7 +4,7 @@
 * @copyright Copyright (c) 2017
 * @license MIT
 * @category PHP Trait
-* @version [1.2]
+* @version [1.2.2]
 * @date     2017-10-55
 */
 namespace App\Helper\Traits;
@@ -69,7 +69,7 @@ trait DataViewer {
   * @param [Illuminate/Database/Query/Builder]  $query    [optional custom querybuilder]
   * @param boolean $paginate [default true]
   */
-  public function DataViewerData($request, $query = null,$paginate = true) {
+  public function DataViewerData($request, $query = null,$paginate = 5) {
     $query = $this->loadQueryColumns($query);
     if (!$query)
     return null;
@@ -102,6 +102,6 @@ trait DataViewer {
 
     // dd($query->toSql()); //if want see sql uncomment this line
     $query = $query->orderBy($orderColumn, $orderDirection);
-    return $paginate ? $this->mergeColumnsPaginate($query->paginate($this->dv_pagination_limit ? $this->dv_pagination_limit : 5)) : $query;
+    return $paginate ? $this->mergeColumnsPaginate($query->paginate($this->dv_pagination_limit ? $this->dv_pagination_limit : $paginate)) : $query;
   }
 }
