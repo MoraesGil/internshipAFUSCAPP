@@ -30,16 +30,21 @@ class MovimentosTableSeeder extends Seeder {
     Carbon::setLocale('pt_BR'); // Ajusta o idioma para português do Brasil
 
     $date       = Carbon::now();
+    $vencimento = $faker->boolean($faker->numberBetween(0,100)) ? $date->addDays(rand(1, 300)) : $date->subDays(rand(1, 50));
 
-    foreach (range(1,100) as $i) {
+    foreach (range(1,5000) as $i) {
+      if ($faker->boolean(30)) {
+        $vencimento = $faker->boolean($faker->numberBetween(0,100)) ? $date->addDays(rand(1, 300)) : $date->subDays(rand(1, 50));
+      }
+
       $data = [
         'conta_id'         => $contas[$faker->numberBetween(0,$conLen)]->id,
         'categoria_id'     => $categorias[$faker->numberBetween(0,$catLen)]->id,
         'emitente_id'      => $usuario->id,
         'tipo_entrada'     => $faker->boolean(50),
-        'descricao'            => $faker->text(20),
+        'descricao'        => $faker->text(20),
         'valor'            => $faker->randomFloat(2,0.1,5000),
-        'dt_vencimento'    => $faker->boolean($faker->numberBetween(0,100)) ? $date->addDays(rand(1, 300)) : $date->subDays(rand(1, 50)),
+        'dt_vencimento'    => $vencimento,
         'status'           => $faker->boolean(50),
         'obs'              => $faker->text(20),
 

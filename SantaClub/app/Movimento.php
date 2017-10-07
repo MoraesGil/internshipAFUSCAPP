@@ -11,7 +11,7 @@ class Movimento extends CustomModel {
   use SoftDeletes;
   use DataViewer;
 
-  protected $dates = ['criado_em','excluido_em'];
+  protected $dates = ['criado_em','excluido_em','dt_vencimento'];
 
   protected $fillable = [
     'conta_id',
@@ -35,13 +35,7 @@ class Movimento extends CustomModel {
     'categoria'
   ];
 
-  protected $dv_pagination_limit = 15;
   protected $dv_config = [
-    [
-      'label' => 'Cod',
-      'name' => 'categoria_id',
-      'search' => true
-    ],
     [
       'label' => 'Descrição',
       'name' => 'descricao',
@@ -67,10 +61,17 @@ class Movimento extends CustomModel {
   public function getCategoriaCorAttribute() {
     return $this->categoria->color;
   }
+  public function getDtVencimentoAttribute($value) {
+    return Carbon::parse($value)->format('d/m/Y');
+  }
+  public function getValorAttribute($value) {
+    return "R$ ".number_format($value, 2, ',', '.');
+  }
+
 
 
   public static function movimentacoes() {
-    return Movimento::whereNull('movimento_id');
+    return Movimento::whereNull('movimento_id')->orderBy('dt_vencimento','asc');
   }
 
   public function conta() {

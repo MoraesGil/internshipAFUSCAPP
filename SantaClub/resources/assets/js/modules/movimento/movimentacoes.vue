@@ -1,54 +1,71 @@
 <template lang="html">
-  <div class="x_panel">
-    <div class="x_title">
-      <h2>{{title}} </h2>
-      <small class="pull-right">{{subtitle}}</small>
-      <div class="clearfix"></div>
-    </div>
-    <div class="">
-      <table class="table-hover main-table">
-        <tbody>
-          <tr >
-            <td class="first">
-              <i class="fa fa-circle fa-fw red"></i>
-            </td>
-            <td class="description"  >
-              <table class="fixed-table">
-                <tr>
-                  <td>
-                    <a href="#">
-                      Folha de pagamento da santa casa Mar/2017
-                      <small>
-                        10/09/2017
-                      </small>
-                    </a>
-                  </td>
-                </tr>
-              </table>
-            </td>
-            <td class="value">
-              R$ -7.700,26
-            </td>
-            <td class="end">
-              <div class="pull-right">
-                <i class="fa fa-thumbs-o-up fa-fw pull-left"></i>
-                <i class="fa fa-chevron-down fa-fw pull-left"></i>
-              </div>
-            </td>
-          </tr>
-        </tbody>
-      </table>
-    </div>
+  <div >
+    <!-- <div class="" v-if="dataSource != ''"> -->
+    <table  class="table-hover main-table">
+      <thead>
+        <tr>
+          <th class="fit"></th>
+          <th class=""> Descrição </th>
+          <th class="" v-if="!miniMode"> Categoria </th>
+          <th class=""> Valor </th>
+          <th class="fit text-center"> Opções </th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr v-for="(mov,index) in pagination.data">
+          <td class="fit">
+            <i :class="['fa fa-circle fa-fw',(mov.tipo_entrada == 0 ? 'red' : 'green' )]"></i>
+          </td>
+          <td class="descricao text-left">
+            <table class="fixed-table">
+              <tr>
+                <td>
+                  <a href="#">
+                    Folha de pagamento da santa casa Mar/2017
+                    <template v-if="!miniMode">
+                      <strong class="float_data" v-if="index == 0 || (mov.dt_vencimento != (pagination.data[index-1] !=null ? pagination.data[index-1].dt_vencimento : ''))">
+                        {{mov.dt_vencimento}}
+                      </strong>
+                    </template>
+                    <small v-else>
+                      {{mov.dt_vencimento}}
+                    </small>
+                  </a>
+                </td>
+              </tr>
+            </table>
+          </td>
+          <td class="categoria text-left" v-if="!miniMode">
+            <table class="fixed-table">
+              <tr>
+                <td>
+                  <i class="fa fa-bookmark" :style="{color:mov.categoria_cor}"></i> {{mov.categoria_label}}
+                </td>
+              </tr>
+            </table>
+          </td>
+          <td class="valor">
+            {{mov.valor}}
+          </td>
+          <td class="fit text-center mov_options">
+            <i class="fa fa-thumbs-o-up fa-fw  "></i>
+            <i class="fa fa-chevron-down fa-fw "></i>
+          </td>
+        </tr>
+      </tbody>
+    </table>
+
+    <!-- </div> -->
   </div>
 </template>
 
 <script>
+import DataViewer      from '../DataViewer/gridView.vue'
+
 export default {
+  extends: DataViewer,
+
   props: {
-    title: {
-      type: String,
-      default: 'Title'
-    },
     subtitle: {
       type: String,
       default: 'subtitle'
@@ -61,27 +78,28 @@ export default {
       type: Boolean,
       default: true
     },
-
-
+    miniMode: {
+      type: Boolean,
+      default: false
+    },
   },
   mounted() {
-
   },
   data() {
     return {
-      searchTerm:'',
-      items:[],
-      currentPage:0,
+
     }
   },
   computed: {
+    titleComputed(){
+      return this.source == '' ? "DataSource não informado" : this.title;
+    },
 
   },
   watch: {
 
   },
   methods: {
-
 
   }
 
@@ -115,36 +133,48 @@ table.main-table > tbody > tr  {
   border-bottom: 1px solid #F1F2F5;
 }
 
-table > tbody > tr > td.description {
+/**
+*  ######### Configuração das colunas
+*/
+table > tbody > tr > td.descricao {
   padding: 11px 2px 9px;
   font-weight: 600;
+  /*background: purple;*/
+  width: 55%;
 }
-
-table > tbody > tr > td.description > div{
-  width: 1px;
-  overflow: hidden;
-  text-overflow: ellipsis;
-
+table > tbody > tr > td.categoria {
+  /*background: pink;*/
+  width: 20%;
 }
-table > tbody > tr > td.value {
-  text-align: right;
-  color: #778789;
+table > tbody > tr > td.valor {
   white-space: nowrap;
-  width: 1%;
+  width: 15%;
   padding:0  2px;
+  /*background: yellow;*/
+}
+table > tbody > tr > td.fit {
+  width: 1%;
+  /*background: blue;*/
 }
 
-table > tbody > tr > td.description small {
+/**
+*  ######### ajuste overflow descricao
+*/
+table > tbody > tr > td.descricao small {
   display: block;
   font-size: 11px;
   color: #999999;
 }
-
-table > tbody > tr > td.first {
-  width: 5px;
+table > tbody > tr > td.descricao > div{
+  overflow: hidden;
+  text-overflow: ellipsis;
 }
-table > tbody > tr > td.end {
-  width: 50px;
-  padding: 0 2px;
+.mov_options{
+  width: 9% !important;
+}
+.float_data{
+  /*background: green;*/
+  position: absolute;
+  left: -75px;
 }
 </style>

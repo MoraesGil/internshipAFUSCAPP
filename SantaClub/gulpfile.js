@@ -23,6 +23,7 @@ elixir((mix) => {
     './node_modules/gentelella/build/js/custom.js',
     './node_modules/bootstrap/dist/js/bootstrap.js',
     './node_modules/sweetalert2/dist/sweetalert2.js',
+    './node_modules/jquery-slimscroll/jquery.slimscroll.min.js'
   ],'public/js/vendor.js')
 
   .copy('./node_modules/font-awesome/fonts', 'public/fonts');

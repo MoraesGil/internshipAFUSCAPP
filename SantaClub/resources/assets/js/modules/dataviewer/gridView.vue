@@ -19,52 +19,50 @@
           </div>
         </div>
         <h1 v-if="!pagination.total" class="text-center">Não há dados para ser exibidos</h1>
-              <div class="table-responsive">
-        <table class="table table-hover table-striped table-bordered" v-if="pagination.total">
-          <thead>
-            <tr>
-              <th v-for="(column,key) in pagination.columns " @click="toggleOrder(key)">
-                <span>{{column}}</span>
-                <span v-if="key === orderBy.column">
-                  <span v-if="orderBy.direction === 'desc'"><i class="fa fa-sort-amount-desc"></i></span>
-                  <span v-else><i class="fa fa-sort-amount-asc"></i></span>
-                </span>
-                <span v-else><i class="fa fa-sort"></i></span>
-              </th>
-              <template v-if="hasOptionsRow">
-                <th class="fit"> opções <i class="fa fa-gear fa-fw"></i> </th>
-              </template>
-            </tr>
-          </thead>
-          <tbody>
-            <tr v-for="row in pagination.data">
-              <td v-for="(value,key) in row">
-                {{ value }}
-              </td>
-
-              <td class="fit text-center"  >
-                <template v-for="option in validOptionsRow">
-                  <button v-if="option == 'detail'" data-toggle="tooltip" title="Detalhes" type="button" class="btn btn-default btn-xs" @click="optionClick('detail')">
-                    <i class="fa fa-eye fa-fw"></i>
-                  </button>
-                  <button v-if="option == 'edit'" data-toggle="tooltip" title="Editar" type="button" class="btn btn-warning btn-xs" @click="optionClick('edit')">
-                    <i class="fa fa-edit fa-fw"></i>
-                  </button>
-                  <button v-if="option == 'delete'" data-toggle="tooltip" title="Excluir" type="button" class="btn btn-danger btn-xs" @click="optionClick('delete')">
-                    <i class="fa fa-trash fa-fw"></i>
-                  </button>
-                  <button v-if="option == 'print'" data-toggle="tooltip" title="Imprimir" type="button" class="btn btn-info btn-xs hidden-xs" @click="optionClick('print')">
-                    <i class="fa fa-print fa-fw"></i>
-                  </button>
-                  <button v-if="option == 'download'" data-toggle="tooltip" title="Baixar" type="button" class="btn btn-default btn-xs hidden-xs" @click="optionClick('download')">
-                    <i class="fa fa-download fa-fw"></i>
-                  </button>
+        <div class="table-responsive">
+          <table class="table table-hover table-striped table-bordered" v-if="pagination.total">
+            <thead>
+              <tr>
+                <th v-for="(column,key) in pagination.columns " @click="toggleOrder(key)">
+                  <span>{{column}}</span>
+                  <span v-if="key === orderBy.column">
+                    <span v-if="orderBy.direction === 'desc'"><i class="fa fa-sort-amount-desc"></i></span>
+                    <span v-else><i class="fa fa-sort-amount-asc"></i></span>
+                  </span>
+                  <span v-else><i class="fa fa-sort"></i></span>
+                </th>
+                <template v-if="hasOptionsRow">
+                  <th class="fit"> opções <i class="fa fa-gear fa-fw"></i> </th>
                 </template>
-              </td>
-
-            </tr>
-          </tbody>
-        </table>
+              </tr>
+            </thead>
+            <tbody>
+              <tr v-for="row in pagination.data">
+                <td v-for="(value,key) in row">
+                  {{ value }}
+                </td>
+                <td class="fit text-center"  >
+                  <template v-for="option in validOptionsRow">
+                    <button v-if="option == 'detail'" data-toggle="tooltip" title="Detalhes" type="button" class="btn btn-default btn-xs" @click="optionClick('detail')">
+                      <i class="fa fa-eye fa-fw"></i>
+                    </button>
+                    <button v-if="option == 'edit'" data-toggle="tooltip" title="Editar" type="button" class="btn btn-warning btn-xs" @click="optionClick('edit')">
+                      <i class="fa fa-edit fa-fw"></i>
+                    </button>
+                    <button v-if="option == 'delete'" data-toggle="tooltip" title="Excluir" type="button" class="btn btn-danger btn-xs" @click="optionClick('delete')">
+                      <i class="fa fa-trash fa-fw"></i>
+                    </button>
+                    <button v-if="option == 'print'" data-toggle="tooltip" title="Imprimir" type="button" class="btn btn-info btn-xs hidden-xs" @click="optionClick('print')">
+                      <i class="fa fa-print fa-fw"></i>
+                    </button>
+                    <button v-if="option == 'download'" data-toggle="tooltip" title="Baixar" type="button" class="btn btn-default btn-xs hidden-xs" @click="optionClick('download')">
+                      <i class="fa fa-download fa-fw"></i>
+                    </button>
+                  </template>
+                </td>
+              </tr>
+            </tbody>
+          </table>
         </div>
         <hr>
         <!-- BEGIN FOOTER -->
@@ -107,11 +105,18 @@
 <script>
 import axios from 'axios'
 import _ from 'lodash'
+require('../errors/ErrorMixin.js')
 
 export default {
   props: {
-    source: String,
-    title: String,
+    source: {
+      type: String,
+      default: ''
+    },
+    title: {
+      type: String,
+      default: 'Title'
+    },
     optionsrow: {
       type: Array,
       default: function() {
@@ -145,6 +150,15 @@ export default {
     }
   },
   computed: {
+    Filters(){
+      return ''
+    },
+    SourceUrl(){
+      return this.source + '?order_column=' +
+      this.orderBy.column + '&order_direction=' +
+      this.orderBy.direction + '&search_term=' +
+      this.searchTerm.trim() + '&page=' + this.pagination.current_page+this.Filters;
+    },
     hasOptionsRow(){
       return this.validOptionsRow.length>0;
     },
@@ -231,11 +245,12 @@ export default {
       this.fetchItems(this.pagination.current_page);
     },
     fetchItems(current_page) {
-      var sourceUrl = this.source + '?order_column=' + this.orderBy.column + '&order_direction=' + this.orderBy.direction + '&search_term=' + this.searchTerm.trim() + '&page=' + current_page;
-      axios.get(sourceUrl).then((res) => {
-        this.pagination = res.data.pagination;
+      console.log('fecth');
+      var self = this;
+      axios.get(self.SourceUrl).then((res) => {
+        self.pagination = res.data;
       }).catch((err) => {
-        this.showAlertError(err); //Mixin
+        self.showAlertError(err); //Mixin
       });
       $('[data-toggle="tooltip"]').tooltip();
     },

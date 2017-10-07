@@ -28,7 +28,7 @@ Route::group(['middleware' => 'auth'], function () {
     'prefix' => 'movimentacoes',
   ], function() {
 
-     Route::get('/', 'MovimentacoesController@getData');
+     Route::get('/', 'MovimentacoesController@getData')->name('movimentacoes.data');
 
   });
 

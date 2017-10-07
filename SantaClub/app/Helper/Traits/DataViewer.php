@@ -6,6 +6,7 @@
 * @category PHP Trait
 * @version [1.2.2]
 * @date     2017-10-55
+* MIT Copyright (c) 2017 - forever Gilberto Moraes
 */
 namespace App\Helper\Traits;
 
@@ -55,22 +56,25 @@ trait DataViewer {
   }
 
   /**
-   * [mergeColumnsPaginate description]
-   * @param  [type] $pagination [description]
-   * @return [type]             [description]
-   */
+  * [mergeColumnsPaginate description]
+  * @param  [Illuminate/Database/Query/Builder] $pagination [required]
+  * @return [array]
+  */
   private function mergeColumnsPaginate($pagination){
     return collect(['columns'=>$this->dv_columns])->merge($pagination);
   }
 
- /**
+  /**
   * [gm - DataViewerData description]
   * @param [Illuminate\Http\Request]  $request  [required]
   * @param [Illuminate/Database/Query/Builder]  $query    [optional custom querybuilder]
   * @param boolean $paginate [default true]
   */
-  public function DataViewerData($request, $query = null,$paginate = 5) {
+  public function DataViewerData($request, $query = null,$paginate = null, $mergeColumns = true) {
     $query = $this->loadQueryColumns($query);
+    if ($paginate === null) {
+      $paginate = 15;
+    }
     if (!$query)
     return null;
     $v =  Validator::make($request->only([
@@ -86,8 +90,6 @@ trait DataViewer {
     if ($v->fails())
     return $v->errors()->all();
 
-    $orderColumn    = $request->order_column ? $request->order_column : key($this->dv_columns);
-    $orderDirection = $request->order_direction ? $request->order_direction : 'desc';
     $searchTerm     = strtolower($request->search_term ? $request->search_term:"");
 
     if ($searchTerm !="")
@@ -99,9 +101,12 @@ trait DataViewer {
         // $query->orWhere($searchColumn,'ilike', '%'.$searchTerm.'%');
       }
     });
-
+    if ($request->order_column && $request->order_direction)
+    $query = $query->orderBy($request->order_column, $request->order_direction);
     // dd($query->toSql()); //if want see sql uncomment this line
-    $query = $query->orderBy($orderColumn, $orderDirection);
-    return $paginate ? $this->mergeColumnsPaginate($query->paginate($this->dv_pagination_limit ? $this->dv_pagination_limit : $paginate)) : $query;
+    if ($paginate && $mergeColumns)
+    return $this->mergeColumnsPaginate($query->paginate($paginate));
+
+    return $paginate ? $query->paginate($paginate) : $query;
   }
 }
