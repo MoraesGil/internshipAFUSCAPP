@@ -14,7 +14,7 @@
           <div class="col-md-2 col-sm-4 col-xs-3 form-group has-feedback">
             <button type="button" name="button" class="btn btn-block btn-default" v-on:click="clickSearchButton($event)">
               <input type="checkbox" checked data-toggle="tooltip" title="Filtrar automaticamente" v-model="autoSearch" class="pull-left" />
-              <i class="fa fa-search"></i> Filtrar
+              <i class="fa fa-search"></i> buscar
             </button>
           </div>
         </div>
@@ -41,7 +41,7 @@
                 <td v-for="(value,key) in row">
                   {{ value }}
                 </td>
-                <td class="fit text-center"  >
+                <td class="fit text-center">
                   <template v-for="option in validOptionsRow">
                     <button v-if="option == 'detail'" data-toggle="tooltip" title="Detalhes" type="button" class="btn btn-default btn-xs" @click="optionClick('detail')">
                       <i class="fa fa-eye fa-fw"></i>
@@ -113,6 +113,10 @@ export default {
       type: String,
       default: ''
     },
+    searchable: {
+      type: Boolean,
+      default: true
+    },
     title: {
       type: String,
       default: 'Title'
@@ -127,7 +131,6 @@ export default {
   mounted() {
     this.fetchItems();
   },
-
   data() {
     return {
       rowOptionsList: ['delete', 'detail', 'download', 'edit', 'print'],
@@ -235,7 +238,7 @@ export default {
     },
     search() {
       if (this.searchPageBack == null) {
-        this.searchPageBack = this.pagination.current_page;
+        // this.searchPageBack = this.pagination.current_page;
         this.pagination.current_page = 1;
       }
       if (this.searchTerm == '') {
@@ -245,7 +248,6 @@ export default {
       this.fetchItems(this.pagination.current_page);
     },
     fetchItems(current_page) {
-      console.log('fecth');
       var self = this;
       axios.get(self.SourceUrl).then((res) => {
         self.pagination = res.data;
@@ -253,6 +255,28 @@ export default {
         self.showAlertError(err); //Mixin
       });
       $('[data-toggle="tooltip"]').tooltip();
+    },
+    infiniteHandler($state,scrollable = null){
+      var self = this;
+      setTimeout(function () {
+        self.pagination.current_page+=1;
+        axios.get(self.SourceUrl).then((res_s)=>{
+          let dados = res_s.data.data;
+
+          if (res_s.data.next_page_url == null) {
+            $state.complete();
+          }
+          if (dados.length > 0) {
+            self.pagination.data = self.pagination.data.concat(dados);
+            $state.loaded();
+            if (scrollable !=null) {
+              $('#scrollable').slimScroll({scrollTo:$('#scrollable').scrollTop()+"px"})
+            }
+          }
+        },(res_e)=>{
+          self.showAlertError(res_e);
+        });
+      }, 1000)
     },
     toggleOrder(column) {
       if (column === this.orderBy.column) {
@@ -263,6 +287,7 @@ export default {
       }
       this.fetchItems(this.pagination.current_page);
     },
+
   }
 
 }

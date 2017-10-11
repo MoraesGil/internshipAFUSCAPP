@@ -33,9 +33,9 @@ class MovimentacoesController extends Controller {
   *
   * @return \Illuminate\Http\Response
   */
-  public function getData(Request $request){ 
+  public function getData(Request $request){
     return response()->json(
-      $this->Model->DataViewerData($request,$this->Model->movimentacoes()->with('categoria'),null,false)
+      $this->Model->DataViewerData($request,$this->Model->movimentacoes()->with('categoria'),15,false)
       ,200
     );
   }

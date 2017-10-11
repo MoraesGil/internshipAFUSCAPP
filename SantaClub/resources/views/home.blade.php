@@ -5,7 +5,7 @@
   <div class="right_col" role="main" >
     <div id="dashboard">
       <!-- top tiles -->
-      <div class="row tile_count">
+      <div class="row tile_count hidden">
         <div class="col-md-2 col-sm-4 col-xs-6 tile_stats_count">
           <span class="count_top"><i class="fa fa-user"></i> Associados Internos</span>
           <div class="count">2500</div>
@@ -35,10 +35,18 @@
       </div>
       <!-- /top tiles -->
       <div class="row">
-        <div class="col-md-12 col-sm-4 col-xs-12">
-           <gm-movimento-list />
+        <div class="col-md-10 col-md-offset-1   col-sm-4 col-xs-12">
+          <gm-movimento-list source="http://estagio.dev/movimentacoes" />
         </div>
 
+        {{-- <div class="row">
+          <div class="col-md-4  col-sm-4 col-xs-12">
+          <gm-movimento-list source="http://estagio.dev/movimentacoes" :mini-mode="true"/>
+          </div>
+          <div class="col-md-4  col-sm-4 col-xs-12">
+          <gm-movimento-list source="http://estagio.dev/movimentacoes" :mini-mode="true"/>
+          </div>
+        </div> --}}
       </div>
     </div>
   </div>
@@ -47,5 +55,5 @@
 @endsection
 
 @push('js')
-  <script src="{{asset('js/dashboard.js')}}"></script>
+  <script src="{{elixir('js/dashboard.js')}}"></script>
 @endpush
