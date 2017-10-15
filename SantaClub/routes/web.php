@@ -14,30 +14,42 @@
 
 Auth::routes();
 
-
-
 Route::get('/error/{log}', function ($log) {
   dd(decrypt($log));
 });
 
-  Route::get('/', 'HomeController@index');
+
 
 Route::group(['middleware' => 'auth'], function () {
 
+  Route::get('/', 'HomeController@index')->name('home');
+  Route::get('/home', 'HomeController@index');
+
+
   Route::group([
     'prefix' => 'movimentacoes',
+    'as'=>'mov.'
   ], function() {
-
-     Route::get('/', 'MovimentacoesController@getData')->name('movimentacoes.data');
-
+    Route::get('/', 'MovimentacoesController@index');
   });
 
 
 
-  Route::get('/home', 'HomeController@index');
+  Route::group([
+    'prefix' => 'movimento',
+    'as'=>'mov.'
+  ], function() {
+    Route::resource('/movimentacoes', 'MovimentacoesController', ['except' => ['create', 'edit', 'show']]);
+  });
+
+  Route::group([
+    'prefix' => 'movimento',
+    'as'=>'cat.'
+  ], function() {
+    Route::resource('/categorias', 'CategoriaController', ['except' => ['create', 'edit', 'show']]);
+  });
 
 });
-
 
 
 

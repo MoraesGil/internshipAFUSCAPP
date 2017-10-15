@@ -1,43 +1,63 @@
 <template lang="html">
-  <div >
+  <div class="movContainer">
     <div class="row">
       <!-- advanced tools -->
-      <div class="col-md-11 col-md-offset-1 pl0">
-        <div class="x_panel row text-center">
-          <a href="#" class="custom-btn pull-left" @click.prevent>
-            Lançamento
-            <span class="fa-stack fa-lg">
-              <i class="fa fa-circle fa-stack-2x"></i>
-              <i class="fa fa-plus fa-stack-1x fa-inverse"></i>
-            </span>
-          </a>
-          <a href="#" class="custom-btn pull-left" @click.prevent>
-            Relatório
-            <span class="fa-stack fa-lg">
-              <i class="fa fa-circle fa-stack-2x"></i>
-              <i class="fa fa-print fa-stack-1x fa-inverse"></i>
-            </span>
-          </a>
-
-          <div class="datepick pt8 custom-btn">
-            <i class="fa fa-chevron-left  fa-fw "></i>
-            <span>Este Mês</span>
-            <i class="fa fa-chevron-right fa-fw "></i>
+      <div class="col-xs-12 col-sm-12 col-md-11 col-md-offset-1 pl0" v-if="!miniMode">
+        <div class="x_panel row text-center" style="line-height: 30px;">
+          <div class="col-xs-3 col-sm-4 col-md-4 nopadding">
+            <a href="#" class="custom-btn pull-left" @click.prevent>
+              <span class="hidden-xs">Lançamento</span>
+              <span class="fa-stack fa-lg">
+                <i class="fa fa-circle fa-stack-2x"></i>
+                <i class="fa fa-plus fa-stack-1x fa-inverse"></i>
+              </span>
+            </a>
+            <a href="#" class="custom-btn pull-left hidden-xs" @click.prevent>
+              <span>Relatório</span>
+              <span class="fa-stack fa-lg">
+                <i class="fa fa-circle fa-stack-2x"></i>
+                <i class="fa fa-print fa-stack-1x fa-inverse"></i>
+              </span>
+            </a>
           </div>
+          <div class="col-xs-offset-1 col-xs-5 col-sm-offset-0 col-sm-4 col-md-offset-0 col-md-4 nopadding">
+            <div class="range-picker  custom-btn">
+              <div class="range-picker-prev pull-left">
+                <i class="fa fa-chevron-left fa-fw"></i>
+              </div>
+              <div class="daterange">
+                <div id="daterange-single" class="hidden" >
+                  Dezembro
+                </div>
 
-          <a href="#" class="custom-btn pt8 pull-right" @click.prevent>
-            Conta Itaú
-          </a>
+                <div id="daterange-range">
+                  <span>30 Set</span>
+                  <span>2017</span>
+                  a
+                  <span>30 Set</span>
+                  <span>2017</span>
+                </div>
 
+              </div>
+              <div class="range-picker-next pull-right">
+                <i class="fa fa-chevron-right fa-fw"></i>
+              </div>
+            </div>
+          </div>
+          <div class="col-xs-3 col-sm-4 col-md-4 nopadding">
+            <a href="#" class="custom-btn pull-right" @click.prevent>
+              Conta Itaú
+            </a>
+          </div>
         </div>
       </div>
 
       <!-- searchTools -->
-      <div class="col-md-11 col-md-offset-1 pl0">
+      <div class="col-xs-12 col-sm-12 col-md-11 col-md-offset-1 pl0" v-if="!miniMode">
         <div class="x_panel" style="margin-bottom:0; padding-bottom: 18px;">
           <div class="container">
             <form class="form-inline" style="padding-top: 10px;">
-              <div class="form-group pull-left" style="padding-top: 10px;">
+              <div class="form-group pull-left" style="padding-top: 10px;" >
                 <popover title="Filtro avançado" placement="bottom" trigger="click" v-model="popoverFilters" @show="bindThird" >
                   <a href="#" class="custom-btn" @click.prevent data-role="trigger">
                     <i class="fa fa-filter" aria-hidden="true"></i>
@@ -57,40 +77,40 @@
                       <option value="10">Lançamentos parcelados</option>
                     </select>
                     <br><br>
-                    <select class="selectpicker" multiple title="Filte por categorias" v-model="filterCategory">
+                    <select class="selectpicker" multiple title="Filte por categorias">
                       <option v-for="category in categories">{{category}}</option>
                     </select>
                     <br><br>
-                    <button type="button" class="btn btn-default btn-block" @click="applyFilters" trigger="click">
+                    <button type="button" class="btn btn-xs btn-default btn-block" @click="applyFilters" trigger="click">
                       Aplicar filtro
                     </button>
                   </div>
                 </popover>
               </div>
 
-              <button type="button" class="btn btn-default pull-right" v-on:click="clickSearchButton($event)">
+              <button type="button" class="btn btn-default pull-right hidden-xs" v-on:click="clickSearchButton($event)">
                 <input type="checkbox" checked data-toggle="tooltip" title="Filtrar automaticamente" v-model="autoSearch" class="pull-left"  style="margin:4px 10px 0"/>
                 <i class="fa fa-search"></i> Buscar
               </button>
-              <div class="form-group pull-right col-md-5">
+              <div class="form-group pull-right col-xs-5 col-md-5">
                 <input type="text" class="form-control" v-model="searchTerm" placeholder="Buscar por ..." style="width:100%">
               </div>
             </form>
           </div>
         </div>
       </div>
-
-      <div class="col-md-12">
-        <div id="scrollable" >
+      <!-- table -->
+      <div class="col-xs-12 col-sm-12 col-md-12">
+        <div :id="scrollableId" :class="(!miniMode ? 'scrollable-box': '')">
           <div class="row line" v-for="(mov,index) in pagination.data">
-            <div class="col-md-1 float_data text-center">
+            <div class="col-md-1 float_data text-center hidden-xs hidden-sm" v-if="!miniMode">
               <strong  v-if="index == 0 || (mov.dt_vencimento != (pagination.data[index-1] !=null ? pagination.data[index-1].dt_vencimento : ''))">
                 {{tinyDate(mov.dt_vencimento)}}
               </strong>
             </div>
-            <div class="col-md-11 mytable-wrap" >
-              <div class="row mytable">
-                <div class="col-md-6 start">
+            <div :class="['mytable-wrap',tableSize]" >
+              <div class="row mytable" :style="(miniMode ? 'line-height: 12px;' : '')">
+                <div :class="['col-xs-5 col-sm-6 col-md-5',(!miniMode ? 'start': '')]">
                   <i :class="['pull-left fa fa-circle fa-fw status',(mov.tipo_entrada == 0 ? 'red' : 'green' )]"></i>
                   <div class="elipse_over_flow">
                     {{mov.descricao}}
@@ -99,58 +119,56 @@
                     </small>
                   </div>
                 </div>
-                <div class="col-md-3">
-                  <i class="fa fa-bookmark" :style="{color:mov.categoria_cor}"></i> {{mov.categoria_label}}
+                <div class="col-xs-3 col-sm-3 col-md-4" v-if="!miniMode">
+                  <i class="fa fa-square fa-fw" :style="{color:mov.categoria_cor}"></i> {{mov.categoria_label}}
                 </div>
-                <div class="col-md-2">
+                <div :class="valueColumnSize">
                   {{mov.valor}}
                 </div>
-                <div class="col-md-1 end">
-                  <i class="fa fa-thumbs-o-up fa-fw  "></i>
-                  <i class="fa fa-chevron-down fa-fw "></i>
+                <div :class="[optionsColumnSize,(!miniMode ? 'end': '')]">
+                  <a href="#"><i class="fa fa-thumbs-o-up fa-fw  "></i></a>
+                  <a href="#"><i class="fa fa-chevron-down fa-fw "></i></a>
                 </div>
               </div>
             </div>
           </div>
-          <infinite-loading @infinite="infiniteHandler($event,'#scrollable')">
+          <infinite-loading @infinite="infiniteHandler($event,scrollableId)" v-if="!miniMode">
             <span slot="no-more">
-              There is no more Hacker News :(
+              Não tem mais movimentações :(
             </span>
           </infinite-loading>
-
         </div>
       </div>
 
       <!-- resume board -->
-      <div class="col-md-11 col-md-offset-1 pl0">
+      <div class="col-xs-12 col-sm-12 col-md-11 col-md-offset-1 pl0" v-if="!miniMode">
         <div class="x_panel row" style="margin-top: 15px; padding: 0; border: none">
-          <div class="col-md-2 resumed-td">
+          <div class="col-xs-3 col-sm-2 col-md-2 resumed-td">
             <small>saldo</small>
             <span>R$200</span>
           </div>
-          <div class="col-md-2 resumed-td">
+          <div class="col-xs-3 col-sm-2 col-md-2 resumed-td">
             <small>saldo</small>
             <span>R$200</span>
           </div>
-          <div class="col-md-2 resumed-td">
+          <div class="col-xs-3 col-sm-2 col-md-2 resumed-td">
             <small>saldo</small>
             <span>R$200</span>
           </div>
-          <div class="col-md-2 resumed-td">
+          <div class="col-xs-3 col-sm-2 col-md-2 resumed-td">
             <small>saldo</small>
             <span>R$200</span>
           </div>
-          <div class="col-md-2 resumed-td">
+          <div class="col-xs-3 col-sm-2 col-md-2 resumed-td">
             <small>saldo</small>
             <span>R$200</span>
           </div>
-          <div class="col-md-2 resumed-td">
+          <div class="col-xs-9 col-sm-2 col-md-2 resumed-td">
             <small>saldo</small>
             <span>R$200</span>
           </div>
         </div>
       </div>
-
     </div>
   </div>
 </template>
@@ -161,12 +179,20 @@ import InfiniteLoading from 'vue-infinite-loading';
 import moment          from 'moment'
 import { Popover }     from 'uiv'
 
+/**
+ * Componente movimentaçoes desenvolvido por Gilberto Prudêncio Vaz de Moraes
+ * @type {Vue Component}
+ */
 export default {
   extends: DataViewer,
   components: {
     InfiniteLoading, Popover
   },
   props: {
+    heightPercent: {
+      type: Number,
+      default: 100
+    },
     subtitle: {
       type: String,
       default: 'subtitle'
@@ -186,14 +212,14 @@ export default {
   },
   mounted() {
     var self = this
-    $('#scrollable').slimScroll();
-
-    $(function() {
+    if (!this.miniMode) {
+      $('#'+this.scrollableId).slimScroll();
       self.resizeList();
       $( window ).resize(function() {
         self.resizeList();
       });
-    });
+    }
+    // $('#scrollable1').slimScroll({scrollTo:$('#scrollable1').scrollTop()+1+"px"})
   },
   data() {
     return {
@@ -206,7 +232,18 @@ export default {
     }
   },
   computed: {
-
+    scrollableId(){
+      return 'scrollable'+this._uid
+    },
+    tableSize(){
+      return this.miniMode ? 'col-xs-12 col-sm-12 col-md-12' : 'col-xs-12 col-sm-12 col-md-11'
+    },
+    valueColumnSize(){
+      return this.miniMode ? 'col-xs-4 col-sm-4 col-md-4' : 'col-xs-3 col-sm-2 col-md-2'
+    },
+    optionsColumnSize(){
+      return this.miniMode ? 'col-xs-2 col-sm-2 col-md-3' : 'col-xs-1 col-sm-1 col-md-1'
+    },
   },
   watch: {
 
@@ -215,8 +252,6 @@ export default {
     fetchCategories(){
       axios.get(this.categoriesSource).then((res_s)=>{
         let dados = res_s.data.data;
-
-
       },(res_e)=>{
         self.showAlertError(res_e);
       });
@@ -238,10 +273,10 @@ export default {
       return value.substring(0, 5)
     },
     resizeList(){
-      var newHeight =  $(window).height() * 0.6
-      if (newHeight >= 400) {
-        $('#scrollable').parent().height(newHeight)
-        $('#scrollable').height(newHeight)
+      var newHeight =  $(window).height() * 0.6 * this.heightPercent/100
+      if (newHeight >= 200) {
+        $('#'+this.scrollableId).parent().height(newHeight)
+        $('#'+this.scrollableId).height(newHeight)
       }
     }
   }
@@ -249,29 +284,56 @@ export default {
 </script>
 
 <style lang="css">
-
-.pl0{
-  padding-left: 0px;
+.movContainer{
+  padding: 10px
 }
 
-#scrollable{
-  height: 400px;
+.scrollable-box{
+  height: 200px;
   overflow-y: scroll;
   padding-right: 10px;
 }
+
+/*selector of main scrolldiv id*/
+.slimScrollDiv > :first-child{
+  padding-right: 10px;
+}
+
+@media(min-width:992px){
+  .pl0{
+    padding-left: 0px;
+  }
+}
+
+/*small devices*/
+@media(max-width:991px){
+  .slimScrollDiv > :first-child{
+    padding-left: 9px;
+    padding-right: 10px;
+  }
+  .custom-btn{
+    font-size: 11px;
+  }
+}
+
 .elipse_over_flow {
   white-space: nowrap;
   overflow: hidden;
   text-overflow: ellipsis;
 }
 
+.elipse_over_flow > small {
+  display: block;
+  font-size: 11px;
+  color: #999999;
+}
+
 .mytable-wrap{
-  border-bottom: 1px solid #E6E9ED;
+  /*border-bottom: 1px solid #E6E9ED;*/
   padding-left: 11px;
 }
 .mytable > div{
   padding: 8px;
-  border-bottom: 1px solid #E6E9ED;
 }
 
 .mytable > div.start{
@@ -280,6 +342,7 @@ export default {
 }
 .mytable > div.end{
   border-right: 1px solid #E6E9ED;
+  padding: 8px 2px 8px 0;
 }
 
 .float_data{
@@ -288,6 +351,7 @@ export default {
 
 .line div.mytable {
   background: #fff;
+  border-bottom: 1px solid #E6E9ED;
 }
 
 .line:hover div.mytable {
@@ -303,16 +367,8 @@ i.status{
   margin-left: 0px !important;
 }
 
-.datepick{
-  position: absolute;
-  left: 45%;
-}
-.pt8{
-  padding-top: 8px;
-}
-
 .custom-btn{
-  font-size: 14px;
+  font-size: 1em;
   display: inline-block;
   margin: 0 4px 0px 4px;
 }
@@ -326,4 +382,12 @@ i.status{
   border: none;
 }
 
+.nopadding{
+  padding: 0;
+}
+
+.daterange{
+  line-height: 13px;
+  display: inline-block;
+}
 </style>

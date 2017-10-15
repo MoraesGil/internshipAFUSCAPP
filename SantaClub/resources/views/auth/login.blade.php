@@ -49,7 +49,7 @@
               <br />
 
               <div>
-                <h1><i class="fa fa-cubes"></i>SantaClub</h1>
+                <h1><i class="fa fa-users"></i> SantaClub</h1>
                 <p>@include('layouts.parts.direitos')</p>
               </div>
             </div>

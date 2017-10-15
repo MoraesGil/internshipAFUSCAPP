@@ -32,7 +32,7 @@ class MovimentosTableSeeder extends Seeder {
     $date       = Carbon::now();
     $vencimento = $faker->boolean($faker->numberBetween(0,100)) ? $date->addDays(rand(1, 300)) : $date->subDays(rand(1, 50));
 
-    foreach (range(1,5000) as $i) {
+    foreach (range(1,500) as $i) {
       if ($faker->boolean(30)) {
         $vencimento = $faker->boolean($faker->numberBetween(0,100)) ? $date->addDays(rand(1, 300)) : $date->subDays(rand(1, 50));
       }
@@ -43,7 +43,7 @@ class MovimentosTableSeeder extends Seeder {
         'emitente_id'      => $usuario->id,
         'tipo_entrada'     => $faker->boolean(50),
         'descricao'        => $faker->text(20),
-        'valor'            => $faker->randomFloat(2,0.1,5000),
+        'valor'            => $faker->randomFloat(2,5,5000),
         'dt_vencimento'    => $vencimento,
         'status'           => $faker->boolean(50),
         'obs'              => $faker->text(20),
@@ -59,8 +59,11 @@ class MovimentosTableSeeder extends Seeder {
         if (!$mov->status && $faker->boolean(95)) { //parcial re
           $data["status"] = true;
           foreach (range(1,3) as $b) {
-            $limit =  ($mov->valor*0.9) - $mov->total_parcial; // limit 80%
-            $parcialValue = $faker->randomFloat(2,0.01,$limit); //get random parcial value by limit
+            $limit =  $limit =  ($mov->valor*0.9) - $mov->total_parcial; // limit 90% less sum
+            do {
+              $parcialValue = $faker->randomFloat(2,1,$limit); //get random parcial value by limit
+            } while ($parcialValue <= 0);
+
             $data["valor"] = $parcialValue;
             $data["descricao"] = "Parcial ".$b." - ".$mov->descricao;
             $mov->parciais()->create($data);

@@ -49,11 +49,11 @@ class Movimento extends CustomModel {
   ];
 
   //Accessors
-  protected $appends = ['total_parcial','categoria_label','categoria_cor'];
+  protected $appends = ['total_parcial','categoria_label','categoria_cor','soma_parcial'];
 
   //mutators
   public function getTotalParcialAttribute() {
-    return $this->parciais()->sum('valor');
+    return floatval($this->parciais()->sum('valor'));
   }
   public function getCategoriaLabelAttribute() {
     return $this->categoria->label;
@@ -67,8 +67,9 @@ class Movimento extends CustomModel {
   public function getValorAttribute($value) {
     return "R$ ".number_format($value, 2, ',', '.');
   }
-
-
+  public function getSomaParcialAttribute() {
+    return "R$ ".number_format($this->parciais()->sum('valor'), 2, ',', '.');
+  }
 
   public static function movimentacoes() {
     return Movimento::whereNull('movimento_id')->orderBy('dt_vencimento','asc');

@@ -6,8 +6,10 @@ use Illuminate\Http\Request;
 use App\Movimento;
 use Validator;
 use Carbon\Carbon;
+use App\Helper\Traits\ResourceTrait;
 
 class MovimentacoesController extends Controller {
+  use ResourceTrait;
 
   /**
   * Create a new controller instance.
@@ -15,28 +17,20 @@ class MovimentacoesController extends Controller {
   * @return void
   */
   public function __construct(Movimento $m) {
-    $this->middleware('auth');
     $this->Model = $m;
+    $this->indexView = 'movimentacoes';
   }
 
   /**
-  * Abre a pagina de movimentações.
-  *
-  * @return \Illuminate\Http\Response
-  */
-  public function index() {
-    return view('home');
-  }
-
-  /**
-  * Retorna json de movimentacoes
-  *
-  * @return \Illuminate\Http\Response
-  */
-  public function getData(Request $request){
+   * gm - Override default dataviwer paginate Resource trait
+   *
+   * @return \Illuminate\Http\Response
+   */
+  private function getData(Request $request){
     return response()->json(
-      $this->Model->DataViewerData($request,$this->Model->movimentacoes()->with('categoria'),15,false)
+      $this->Model->DataViewerData($request,$this->Model->movimentacoes()->with('categoria'),50,false)
       ,200
     );
   }
+
 }

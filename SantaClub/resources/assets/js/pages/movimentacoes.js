@@ -2,7 +2,7 @@
 import GmMovimentoList from '../modules/movimento/movimentacoes.vue'
 
 new Vue({
-  el:'#dashboard',
+  el:'#movimentacoes',
   components:{
     GmMovimentoList
   },
@@ -16,4 +16,5 @@ new Vue({
   methods:{
 
   }
+
 })

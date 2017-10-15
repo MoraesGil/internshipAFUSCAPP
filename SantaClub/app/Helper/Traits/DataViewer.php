@@ -2,11 +2,10 @@
 /*
 * @author Gilberto Prudêncio Vaz de Moraes
 * @copyright Copyright (c) 2017
-* @license MIT
 * @category PHP Trait
 * @version [1.2.2]
-* @date     2017-10-55
-* MIT Copyright (c) 2017 - forever Gilberto Moraes
+* @date     2017-10-05
+* @license Este software não e LIVRE, foi desenvolvido em 2017, por Gilberto Prudêncio Vaz de Moraes (moraesdev@gmail.com), ao qual pertencem e se resguardam todas as propriedades intelectuais.
 */
 namespace App\Helper\Traits;
 
@@ -56,7 +55,7 @@ trait DataViewer {
   }
 
   /**
-  * [mergeColumnsPaginate description]
+  * [gm - mergeColumnsPaginate description]
   * @param  [Illuminate/Database/Query/Builder] $pagination [required]
   * @return [array]
   */
@@ -72,8 +71,9 @@ trait DataViewer {
   */
   public function DataViewerData($request, $query = null,$paginate = null, $mergeColumns = true) {
     $query = $this->loadQueryColumns($query);
-    if ($paginate === null) {
-      $paginate = 15;
+    $plimit = $request->get('plimit');
+    if ($paginate === null || $plimit) {
+      $paginate = $plimit ? $plimit : 15; 
     }
     if (!$query)
     return null;
