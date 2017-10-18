@@ -13,8 +13,8 @@
         <a><i class="fa fa-cubes fa-fw"></i> Caixa <span class="fa fa-chevron-down fa-fw"></span></a>
         <ul class="nav child_menu" style="display: none;">
           <li><a href="{{route('mov.movimentacoes.index')}}">  Lançamentos </a></li>
-          <li><a href="#">   Gerenciar Contas </a></li>
-          <li><a href="{{route('cat.categorias.index')}}">   Gerenciar Categorias </a></li>
+          <li><a href="{{route('con.contas.index')}}">Gerenciar Contas </a></li>
+          <li><a href="{{route('cat.categorias.index')}}">Gerenciar Categorias </a></li>
           <li><a href="#">   Gerar Contas a Receber </a></li>
           <li><a href="#">   Exportar folha descontos </a></li>
         </ul>

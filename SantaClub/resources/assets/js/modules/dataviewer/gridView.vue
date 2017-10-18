@@ -2,7 +2,12 @@
   <div class="x_panel">
     <div class="x_title">
       <h2> {{title}}</h2>
-      <button data-toggle="tooltip" title="Adicionar Registro" type="button" class="btn btn-default pull-right" @click="optionClick('add')"> Novo <i class="fa fa-plus fa-fw"></i></button>
+      <template v-for="btn in topButtons">
+        <a class="btn btn-default pull-right"  @click="buttonClick(btn,row)">
+          {{btn.label}}  <i :class="btn.icon"></i>
+        </a>
+      </template>
+
       <div class="clearfix"></div>
     </div>
     <div class="x_content">
@@ -22,41 +27,34 @@
         <table class="table table-hover table-striped table-bordered" v-if="pagination.total">
           <thead>
             <tr>
-              <th v-for="(column,key) in pagination.columns " @click="toggleOrder(key)">
-                <span>{{column}}</span>
-                <span v-if="key === orderBy.column">
-                  <span v-if="orderBy.direction === 'desc'"><i class="fa fa-sort-amount-desc"></i></span>
-                  <span v-else><i class="fa fa-sort-amount-asc"></i></span>
-                </span>
-                <span v-else><i class="fa fa-sort"></i></span>
-              </th>
-              <template v-if="hasOptionsRow">
+              <template v-for="(column,key) in pagination.columns ">
+                <th v-if="notHidden(key)" @click="toggleOrder(key)">
+                  <span>{{column}}</span>
+                  <span v-if="key === orderBy.column">
+                    <span v-if="orderBy.direction === 'desc'"><i class="fa fa-sort-amount-desc"></i></span>
+                    <span v-else><i class="fa fa-sort-amount-asc"></i></span>
+                  </span>
+                  <span v-else><i class="fa fa-sort"></i></span>
+                </th>
+              </template>
+              <template v-if="rowButtons.length>0">
                 <th class="fit"> opções <i class="fa fa-gear fa-fw"></i> </th>
               </template>
             </tr>
           </thead>
           <tbody>
             <tr v-for="row in pagination.data">
-              <td v-for="(value,key) in row">
-                {{ value }}
-              </td>
-              <td class="fit text-center">
-                <template v-for="option in validOptionsRow">
-                  <button v-if="option == 'detail'" data-toggle="tooltip" title="Detalhes" type="button" class="btn btn-default btn-xs" @click="optionClick('detail')">
-                    <i class="fa fa-eye fa-fw"></i>
-                  </button>
-                  <button v-if="option == 'edit'" data-toggle="tooltip" title="Editar" type="button" class="btn btn-warning btn-xs" @click="optionClick('edit')">
-                    <i class="fa fa-edit fa-fw"></i>
-                  </button>
-                  <button v-if="option == 'delete'" data-toggle="tooltip" title="Excluir" type="button" class="btn btn-danger btn-xs" @click="optionClick('delete')">
-                    <i class="fa fa-trash fa-fw"></i>
-                  </button>
-                  <button v-if="option == 'print'" data-toggle="tooltip" title="Imprimir" type="button" class="btn btn-info btn-xs hidden-xs" @click="optionClick('print')">
-                    <i class="fa fa-print fa-fw"></i>
-                  </button>
-                  <button v-if="option == 'download'" data-toggle="tooltip" title="Baixar" type="button" class="btn btn-default btn-xs hidden-xs" @click="optionClick('download')">
-                    <i class="fa fa-download fa-fw"></i>
-                  </button>
+              <template v-for="(value,key) in row">
+                <td v-if="notHidden(key)">
+                  <div v-html="value"></div>
+                </td>
+              </template>
+
+              <td class="fit text-center" v-if="rowButtons.length>0">
+                <template v-for="btn in rowButtons">
+                  <a data-toggle="tooltip" :title="btn.label" class="btn btn-default btn-xs" @click="buttonClick(btn,row)">
+                    <i :class="btn.icon"></i>
+                  </a>
                 </template>
               </td>
             </tr>
@@ -97,11 +95,50 @@
       </div>
     </div>
   </div>
- </template>
+
+</template>
 
 <script>
 import axios from 'axios'
 import _ from 'lodash'
+const AVAILABLE_BUTTONS = {
+  add : {
+    label : 'Novo',
+    icon : 'fa fa-plus',
+    places: ['t','r'],
+    default_place:'t'
+  },
+  print : {
+    label : 'Relatório',
+    icon : 'fa fa-print',
+    places: ['t','r'],
+    default_place:'t'
+  },
+  delete : {
+    label : 'Excluir',
+    icon : 'fa fa-trash',
+    places: ['r'],
+    default_place:'r'
+  },
+  detail : {
+    label : 'Detalhes',
+    icon : 'fa fa-eye',
+    places: ['r'],
+    default_place:'r'
+  },
+  download : {
+    label : 'Baixar',
+    icon : 'fa fa-download',
+    places: ['t','r'],
+    default_place:'r'
+  },
+  edit : {
+    label : 'Alterar',
+    icon : 'fa fa-edit',
+    places: ['r'],
+    default_place:'r'
+  },
+};
 
 /**
  * Componente gridView desenvolvido por Gilberto Prudêncio Vaz de Moraes
@@ -132,14 +169,22 @@ export default {
       default: function() {
         return []
       }
+    },
+    buttons: {
+      type: Array,
+      default: function() {
+        return []
+      }
     }
   },
   mounted() {
     this.fetchItems();
+    this.loadButtons();
   },
   data() {
     return {
-      rowOptionsList: ['delete', 'detail', 'download', 'edit', 'print'],
+      topButtons:[],
+      rowButtons:[],
       autoSearch: true,
       searchTerm: '',
       searchPageBack: null,
@@ -150,6 +195,7 @@ export default {
         last_page: null,
         from: null,
         to: null,
+        hidden_columns:[]
       },
       offset: 4,
       orderBy: {
@@ -176,10 +222,13 @@ export default {
       if (this.source.trim() == '') {
         return '';
       }
-      return this.source + '?order_column=' +
+
+      var url = this.source + '?order_column=' +
       this.orderBy.column + '&order_direction=' +
       this.orderBy.direction + '&search_term=' +
-      this.searchTerm.trim() + '&page=' + this.pagination.current_page+this.Filters;
+      this.searchTerm.trim() + '&page=' + this.pagination.current_page+this.Filters
+
+      return url.replace('custom_','');
     },
     hasOptionsRow(){
       return this.validOptionsRow.length>0;
@@ -234,8 +283,39 @@ export default {
       },
       500
     ),
-    optionClick(option){
-      this.$emit('optionclick',option)
+    buttonClick(btn,row){
+      var par = 'gilbertoo';
+      switch (btn.label) {
+        case AVAILABLE_BUTTONS['add'].label: {
+          this.$emit('add',par)
+        }
+        break;
+        case AVAILABLE_BUTTONS['delete'].label: {
+          this.$emit('delete',par)
+        }
+        break;
+        case AVAILABLE_BUTTONS['detail'].label: {
+          this.$emit('detail',par)
+        }
+        break;
+        case AVAILABLE_BUTTONS['download'].label: {
+          this.$emit('download',par)
+        }
+        break;
+        case AVAILABLE_BUTTONS['edit'].label: {
+          this.$emit('edit',par)
+        }
+        break;
+        case AVAILABLE_BUTTONS['print'].label: {
+          this.$emit('print',par)
+        }
+        break;
+
+        default:
+          break;
+        }
+
+      // this.$emit('buttonClick',option)
     },
     clickSearchButton(event) {
       if (event.target.tagName != "BUTTON") {
@@ -310,7 +390,27 @@ export default {
       }
       this.fetchItems(this.pagination.current_page);
     },
+    notHidden(value){
+      return this.pagination.hidden_columns == null || this.pagination.hidden_columns.map(x => x).indexOf(value) === -1;
+    },
+    loadButtons(){
+      this.buttons.forEach((val,i)=>{
+        var btn =  val.split(":");
+        var valid = Object.keys(AVAILABLE_BUTTONS).indexOf(btn[0]) !==-1;
+
+        if (valid) {
+           btn[1] = AVAILABLE_BUTTONS[btn[0]].places.indexOf(btn[1]) !== -1 ? btn[1] : AVAILABLE_BUTTONS[val].default_place;
+           if (btn[1] == 't') {
+             this.topButtons.push(AVAILABLE_BUTTONS[btn[0]])
+           }
+           if (btn[1] == 'r') {
+             this.rowButtons.push(AVAILABLE_BUTTONS[btn[0]])
+           }
+        }
+      });
+    },
   }
+
 }
 </script>
 <style media="screen">

@@ -14,8 +14,11 @@ use Illuminate\Http\Request;
 
 trait ResourceTrait {
 
-  protected $indexView = null;
-  protected $formView  = null;
+  protected $indexView  = null;
+  protected $formView   = null;
+  protected $dataSource = null;
+  protected $pageTitle  = null;
+
 
   /**
   * GM - Display a listing of the resource.
@@ -30,7 +33,7 @@ trait ResourceTrait {
       if (!$this->indexView) {
         dd('set index view');
       }
-      return view($this->indexView);
+      return view($this->indexView,['dataSource'=>$this->dataSource,'pageTitle'=>$this->pageTitle]);
     }
   }
 
@@ -41,7 +44,7 @@ trait ResourceTrait {
   */
   private function getData(Request $request){
     return response()->json(
-      $this->Model->DataViewerData($request,null,15,false)
+      $this->Model->DataViewerData($request)
       ,200
     );
   }

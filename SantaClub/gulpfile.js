@@ -5,9 +5,12 @@ require('laravel-elixir-vue-2');
 
 elixir((mix) => {
   mix.webpack('./resources/assets/js/pages/dashboard.js')
+  .webpack('./resources/assets/js/pages/crud.js')
   .webpack('./resources/assets/js/pages/movimentacoes.js')
-  .version([
+  .version([ 
     'public/js/dashboard.js',
+    'public/js/crud.js',
+    'public/js/movimentacoes.js'
   ])
 
   mix.styles([
@@ -47,8 +50,8 @@ elixir((mix) => {
   // cacheBusting
   mix.version([
     'public/css/vendor.css',
-    'public/js/vendor.js',
     'public/js/main.js',
+    'public/js/vendor.js',
   ])
 
 });

@@ -13,8 +13,8 @@ use Validator;
 
 trait DataViewer {
 
-  protected $dv_columns           = null;
-  protected $dv_searchableColumns = [];
+  private $dv_columns           = null;
+  private $dv_searchableColumns = [];
 
   private $validator_messages     = [
     'column.in' => 'Nome de coluna inválida',
@@ -60,7 +60,7 @@ trait DataViewer {
   * @return [array]
   */
   private function mergeColumnsPaginate($pagination){
-    return collect(['columns'=>$this->dv_columns])->merge($pagination);
+    return collect(['columns'=>$this->dv_columns,'primary'=>$this->primaryKey,'hidden_columns'=> $this->dv_hidden])->merge($pagination);
   }
 
   /**
@@ -73,7 +73,7 @@ trait DataViewer {
     $query = $this->loadQueryColumns($query);
     $plimit = $request->get('plimit');
     if ($paginate === null || $plimit) {
-      $paginate = $plimit ? $plimit : 15; 
+      $paginate = $plimit ? $plimit : 15;
     }
     if (!$query)
     return null;

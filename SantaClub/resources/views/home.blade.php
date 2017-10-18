@@ -56,7 +56,7 @@
                 </p>
               </li>
             </ul>
-            <gm-movimento-list source="http://estagio.dev/movimentacoes" :mini-mode="true" :height-percent="50" :other-filters="[{plimit:5}]"/>
+            <gm-movimento-list source="{{route('mov.movimentacoes.index')}}" :mini-mode="true" :height-percent="50" :other-filters="[{plimit:5}]"/>
           </div>
           <div class="x_content">
             <ul class="to_do">
@@ -66,7 +66,7 @@
                 </p>
               </li>
             </ul>
-            <gm-movimento-list source="http://estagio.dev/movimentacoes" :mini-mode="true" :height-percent="50" :other-filters="[{plimit:5}]"/>
+            <gm-movimento-list source="{{route('mov.movimentacoes.index')}}" :mini-mode="true" :height-percent="50" :other-filters="[{plimit:5}]"/>
           </div>
         </div>
       </div>
@@ -89,7 +89,7 @@
                 </p>
               </li>
             </ul>
-            <gm-movimento-list source="http://estagio.dev/movimentacoes" :mini-mode="true" :height-percent="50" :other-filters="[{plimit:5}]"/>
+            <gm-movimento-list source="{{route('mov.movimentacoes.index')}}" :mini-mode="true" :height-percent="50" :other-filters="[{plimit:5}]"/>
           </div>
           <div class="x_content">
             <ul class="to_do">
@@ -99,7 +99,7 @@
                 </p>
               </li>
             </ul>
-            <gm-movimento-list source="http://estagio.dev/movimentacoes" :mini-mode="true" :height-percent="50" :other-filters="[{plimit:5}]"/>
+            <gm-movimento-list source="{{route('mov.movimentacoes.index')}}" :mini-mode="true" :height-percent="50" :other-filters="[{plimit:5}]"/>
           </div>
         </div>
       </div>
