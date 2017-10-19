@@ -114,7 +114,7 @@
                   <i :class="['pull-left fa fa-circle fa-fw status',(mov.tipo_entrada == 0 ? 'red' : 'green' )]"></i>
                   <div class="elipse_over_flow">
                     {{mov.descricao}}
-                    <small v-if="miniMode">
+                    <small :class="(!miniMode ? 'visible-xs visible-sm' : '')">
                       {{mov.dt_vencimento}}
                     </small>
                   </div>
