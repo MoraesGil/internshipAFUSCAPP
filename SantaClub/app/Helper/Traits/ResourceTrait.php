@@ -14,10 +14,10 @@ use Illuminate\Http\Request;
 
 trait ResourceTrait {
 
-  protected $indexView  = null;
-  protected $formView   = null;
-  protected $dataSource = null;
-  protected $pageTitle  = null;
+  protected $indexView    = null;
+  protected $formView     = null;
+  protected $pageTitle    = null;
+  protected $resourceName = null;
 
 
   /**
@@ -26,6 +26,7 @@ trait ResourceTrait {
   * @return \Illuminate\Http\Response
   */
   public function index(Request $request) {
+
     if ($request->ajax() || $request->isJson() || $request->get("json") !=null) {
       return $this->getData($request);
     }
@@ -33,7 +34,10 @@ trait ResourceTrait {
       if (!$this->indexView) {
         dd('set index view');
       }
-      return view($this->indexView,['dataSource'=>$this->dataSource,'pageTitle'=>$this->pageTitle]);
+      if (!$this->resourceName) {
+        dd('set resource name');
+      }
+      return view($this->indexView,['pageTitle'=>$this->pageTitle,'resourceName'=>$this->resourceName]);
     }
   }
 

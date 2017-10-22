@@ -14,9 +14,9 @@ use ResourceTrait;
   * @return void
   */
   public function __construct(Conta $m) {
-    $this->Model = $m;
-    $this->indexView = 'crud';
-    $this->dataSource = route('con.contas.index');
-    $this->pageTitle = 'Contas';
+    $this->Model        = $m;
+    $this->indexView    = 'crud';
+    $this->resourceName = 'con.contas';
+    $this->pageTitle    = 'Contas';
   }
 }

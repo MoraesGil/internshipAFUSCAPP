@@ -284,7 +284,7 @@ export default {
       500
     ),
     buttonClick(btn,row){
-      var par = 'gilbertoo';
+      var par = row;
       switch (btn.label) {
         case AVAILABLE_BUTTONS['add'].label: {
           this.$emit('add',par)
