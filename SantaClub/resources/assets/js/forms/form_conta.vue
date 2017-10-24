@@ -11,7 +11,6 @@
 <script>
 import MainForm from './form_main.vue'
 
-
 export default {
   extends: MainForm,
   components:{

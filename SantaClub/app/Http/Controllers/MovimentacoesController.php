@@ -19,6 +19,8 @@ class MovimentacoesController extends Controller {
   public function __construct(Movimento $m) {
     $this->Model = $m;
     $this->indexView = 'movimentacoes';
+    $this->resourceName = 'mov.movimentacoes';
+    $this->pageTitle    = 'Movimentações';
   }
 
   /**
