@@ -3,11 +3,10 @@
 namespace App;
 use App\CustomModel;
 
-class Fisica extends CustomModel {
+class PessoaFisica extends CustomModel {
+  protected $table ='fisicas';
 
-  public $timestamps = true;
-
-  protected $fillable = ['id','cpf','rg','data_nascimento'];
+  protected $fillable = ['pessoa_id','cpf','rg','data_nascimento'];
 
   protected $dates = ['data_nascimento'];
 
