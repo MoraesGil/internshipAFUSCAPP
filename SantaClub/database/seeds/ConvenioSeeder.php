@@ -44,6 +44,7 @@ class ConvenioSeeder extends Seeder {
 
             DB::commit();
           } catch (Exception $e) {
+            dump($e->getMessage());
             dump('rollback');
             DB::rollback();
           }

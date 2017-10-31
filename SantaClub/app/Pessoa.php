@@ -23,11 +23,23 @@ class Pessoa extends CustomModel {
   }
 
   public function convenio() {
-    return $this->hasOne('App\Associado');
+    return $this->hasOne('App\Convenio');
   }
 
-  public static function associados($builder = false){
-    return $builder ? self::has('associado') : self::has('associado')->get();
+  public function endereco() {
+    return $this->hasOne('App\Endereco');
+  }
+
+  
+
+
+  public static function associados($builder = false, $internos = null){
+    if ($internos === null) {
+      return $builder ? self::has('associado') : self::has('associado')->get();
+    }
+    $q = $internos ? self::whereHas('associado', function($q){ $q->where('cracha', '!=',null); }) :
+    self::whereHas('associado', function($q){ $q->where('cracha',null); });
+    return $builder ? $q : $q->get();
   }
 
   public static function convenios($builder = false){

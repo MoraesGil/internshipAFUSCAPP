@@ -14,6 +14,9 @@ class Associado extends CustomModel {
     return $this->belongsTo('App\Associado');
   }
 
+  public function vales() {
+    return $this->hasMany('App\Vales');
+  }
 
 
 }

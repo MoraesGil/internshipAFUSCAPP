@@ -11,7 +11,7 @@ class CustomModel extends Model {
     'criado_em',
     'atualizado_em',
     'excluido_em',
-  ];
+  ]; 
 
   const CREATED_AT = 'criado_em';
   const UPDATED_AT = 'atualizado_em';
