@@ -1,6 +1,6 @@
 <?php
 /*
-* @author Gilberto Prudêncio Vaz de Moraes
+* @author Gilberto Prudêncio Vaz de Moraes <moraesdev@gmail.com>
 * @copyright Copyright (c) 2017
 * @category PHP Trait
 * @version [1.0]
@@ -10,6 +10,7 @@
 namespace App\Helper\Traits;
 
 use Validator;
+use Session;
 use Illuminate\Http\Request;
 
 trait ResourceTrait {
@@ -19,14 +20,12 @@ trait ResourceTrait {
   protected $pageTitle    = null;
   protected $resourceName = null;
 
-
   /**
   * GM - Display a listing of the resource.
   *
   * @return \Illuminate\Http\Response
   */
   public function index(Request $request) {
-
     if ($request->ajax() || $request->isJson() || $request->get("json") !=null) {
       return $this->getData($request);
     }
@@ -69,9 +68,15 @@ trait ResourceTrait {
   * @param  \Illuminate\Http\Request  $request
   * @return \Illuminate\Http\Response
   */
-  public function store(Request $request)
-  {
-    //
+  public function store(Request $request) {
+    $new = $this->Model->create($request->all());
+
+    if ($request->ajax() || $request->isJson()) {
+      return response()->json($new, 201);
+    }else {
+      Session::flash('success_message','Cadastrado realizado!');
+      return redirect()->route($this->resourceName.'.index');
+    }
   }
 
   /**
@@ -80,9 +85,9 @@ trait ResourceTrait {
   * @param  int  $id
   * @return \Illuminate\Http\Response
   */
-  public function show($id)
-  {
-    //
+  public function show($id) {
+    $model = $this->Model->findOrFail($id);
+    return  $model;
   }
 
   /**
@@ -103,9 +108,16 @@ trait ResourceTrait {
   * @param  int  $id
   * @return \Illuminate\Http\Response
   */
-  public function update(Request $request, $id)
-  {
-    //
+  public function update(Request $request, $id) {
+    $model = $this->Model->findOrFail($id)->update($request->all());
+
+    if ($request->ajax() || $request->isJson()) {
+      return response()->json($model, 200);
+    }else {
+      Session::flash('success_message','Atualizado!');
+      return redirect()->route($this->resourceName.'.index');
+    }
+
   }
 
   /**
@@ -114,9 +126,15 @@ trait ResourceTrait {
   * @param  int  $id
   * @return \Illuminate\Http\Response
   */
-  public function destroy($id)
-  {
-    //
+  public function destroy(Request $request,$id) {
+    $model = $this->Model->findOrFail($id)->delete();
+    if ($request->ajax() || $request->isJson()) {
+      return response()->json(null, 204);
+    }else {
+      Session::flash('success_message','Excluido!');
+      return redirect()->route($this->resourceName.'.index');
+    }
+
   }
 
 }

@@ -1,58 +1,95 @@
+// @author Gilberto Prudêncio Vaz de Moraes <moraesdev@gmail.com>
 require('../main.js')
-import DataViewer from '../modules/dataviewer/gridView.vue'
-import { Modal } from 'uiv'
+import DataViewer    from '../modules/dataviewer/gridView.vue'
+import { Modal }     from 'uiv'
 
 
 import FormCategoria from '../forms/form_categoria.vue'
-import FormConta from '../forms/form_conta.vue'
+import FormConta     from '../forms/form_conta.vue'
 
 new Vue({
- el:'#app',
- components:{
-   Modal,
-   DataViewer,
-   // ## note the form name must be resource route name ex: cat.categorias to form Categira
-   'cat.categorias' : FormCategoria,
-   'con.contas' : FormConta
- },
- data(){
-   return {
-     form_modal : false,
+  el:'#app',
+  components:{
+    Modal,
+    DataViewer,
+    // ## note the form name must be resource route name ex: cat.categorias to form Categoria
+    'cat.categorias': FormCategoria,
+    'con.contas':     FormConta
+  },
+  data(){
+    return {
+      resourceUrl: '',
+      form_modal : false,
+      entity : {}
+    }
+  },
+  mounted(){
+    this.resourceUrl = $("#resourceUrl").val();
+    this.eventHub.$on('savedChanges',this.savedChanges);
+  },
+  destroyed: function() {
+    this.eventHub.$off('savedChanges');
+  },
+  methods:{
+    create(){
+      this.entity = null;
+      this.form_modal = true;
+    },
+    edit(par){
+      if (par.primary != null) {
+        this.entity = par;
+        this.form_modal = true;
+      }else {
+        console.log('Unknow PrimaryKey Field');
+      }
+    },
 
-   }
- },
- mounted(){
+    saveChanges(){
+      this.eventHub.$emit('saveChanges');
+    },
 
- },
- methods:{
-   closeform(){
-     
-   },
-   create(){
-    this.form_modal = true;
-   },
-   store(){
+    savedChanges(){
+      this.form_modal = false;
+      this.eventHub.$emit('refreshGridView');
+    },
 
-   },
+    destroy(par) {
 
-   edit(){
+      var delete_url = this.resourceUrl+'/'+par.primary;
 
-   },
-   update(){
+      let self = this;
 
-   },
-   destroy(){
+      swal({
+        cancelButtonColor:   '#d33',
+        cancelButtonText:    'Cancelar',
+        confirmButtonText:   'Sim',
+        showCancelButton:    true,
+        showLoaderOnConfirm: true,
+        html:                "Confirma exclusão do item: <strong>"+par.title+"</strong> ?",
+        title:               'Atenção',
+        type:                'warning',
+      }).then(function () {
+        axios.delete(delete_url).then((res) => {
+          self.eventHub.$emit('refreshGridView');
+          toastr.success(par.title+' foi excluído com sucesso.');
+        },(res) => {
+          console.log(res);
+          self.showAlertError(res)
+        });
+      }) //end swal
+    },
 
-   },
+    show(){
 
-   show(){
+    },
 
-   },
-   report(){
 
-   },
-   download(){
+    report(){
 
-   }
- }
+    },
+
+    download(){
+
+    }
+  }
 })

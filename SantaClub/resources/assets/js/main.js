@@ -16,7 +16,7 @@ if (token) {
 const eventHub = new Vue() // Single event hub
 Vue.mixin({
   mounted: function () {
-    // console.log('mixin loaded de boas');
+    // console.log('mixin loaded de boas'+this._uid);
   },
   data: function () {
     return {
@@ -32,7 +32,7 @@ Vue.mixin({
         $.each(error.errors,(i,val)=>{
           errors += Object.keys(error.errors)[0] != i ?  " - "+val : val;
         })
-        if (response.status == 500) {
+        if (err.status == 500) {
           console.log('erro cod: '+errors);
           errors = 'Se possivel não feche a tela para identificarmos e corrigir o erro.'
         }

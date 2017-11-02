@@ -1,23 +1,25 @@
+{{-- @author Gilberto Prudêncio Vaz de Moraes <moraesdev@gmail.com>   --}}
 @extends('layouts.app')
 
 @section('content')
   <div id="app">
+    <input type="hidden" name="" value="{{route($resourceName.'.index')}}" id="resourceUrl">
 
-    <modal v-model="form_modal" title="Cadastro" @hide="closeform">
-      <form is="{{$resourceName}}"></form>
+    <modal v-model="form_modal" title="Cadastro" @hide="form_modal = false">
+      <form v-if="form_modal" is="{{$resourceName}}"  :target-url="resourceUrl" :entity-src="entity"></form>
       <div slot="footer">
-        <button type="button" class="btn btn-default">Cancel</button>
-        <button type="button" class="btn btn-success">Gravar</button>
+        <button type="button" class="btn btn-default" @click="form_modal = false">Cancel</button>
+        <button type="button" class="btn btn-success" @click="saveChanges">Gravar</button>
       </div>
     </modal>
 
-    <data-viewer source="{{route($resourceName.'.index')}}" title="{{$pageTitle}}"
-    :buttons="['add','edit','delete','print','download']"
+    <data-viewer :source="resourceUrl" title="{{$pageTitle}}"
+    :buttons="['add','edit','delete']"
     @add="create"
     @edit="edit"
-    @detail="edit"
+    @detail="show"
     @delete="destroy"
-    @download="edit"
+    @download="download"
     @print="report"
     />
 

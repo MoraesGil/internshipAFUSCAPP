@@ -3,11 +3,10 @@
     <div class="x_title">
       <h2> {{title}}</h2>
       <template v-for="btn in topButtons">
-        <a class="btn btn-default pull-right"  @click="buttonClick(btn,row)">
+        <a class="btn btn-default pull-right"  @click="buttonClick(btn)">
           {{btn.label}}  <i :class="btn.icon"></i>
         </a>
       </template>
-
       <div class="clearfix"></div>
     </div>
     <div class="x_content">
@@ -22,9 +21,14 @@
           </button>
         </div>
       </div>
-      <h1 v-if="!pagination.total" class="text-center">Não há dados para ser exibidos</h1>
-      <div class="table-responsive">
-        <table class="table table-hover table-striped table-bordered" v-if="pagination.total">
+      <h1 v-if="!pagination.total && !isLoading" class="text-center">Não há dados para ser exibidos</h1>
+
+      <h1 class="text-center" style="margin-top:60px;" v-show="isLoading">
+        <i class="fa fa-spinner fa-pulse fa-fw"></i>
+      </h1>
+
+      <div class="table-responsive" v-if="pagination.total">
+        <table class="table table-hover table-striped table-bordered">
           <thead>
             <tr>
               <template v-for="(column,key) in pagination.columns ">
@@ -99,6 +103,9 @@
 </template>
 
 <script>
+/**
+ * @author Gilberto Prudêncio Vaz de Moraes <moraesdev@gmail.com> 
+ */
 import axios from 'axios'
 import _ from 'lodash'
 const AVAILABLE_BUTTONS = {
@@ -141,9 +148,10 @@ const AVAILABLE_BUTTONS = {
 };
 
 /**
- * Componente gridView desenvolvido por Gilberto Prudêncio Vaz de Moraes
- * @type {Vue Component}
- */
+* Componente gridView
+* @author Gilberto Prudêncio Vaz de Moraes <moraesdev@gmail.com>
+* @type {Vue Component}
+*/
 export default {
   props: {
     source: {
@@ -180,9 +188,14 @@ export default {
   mounted() {
     this.fetchItems();
     this.loadButtons();
+    this.eventHub.$on('refreshGridView',this.fetchItems);
+  },
+  destroyed: function() {
+    this.eventHub.$off('refreshGridView');
   },
   data() {
     return {
+      isLoading : true,
       topButtons:[],
       rowButtons:[],
       autoSearch: true,
@@ -195,7 +208,8 @@ export default {
         last_page: null,
         from: null,
         to: null,
-        hidden_columns:[]
+        hidden_columns:[],
+        primary:null
       },
       offset: 4,
       orderBy: {
@@ -222,7 +236,6 @@ export default {
       if (this.source.trim() == '') {
         return '';
       }
-
       var url = this.source + '?order_column=' +
       this.orderBy.column + '&order_direction=' +
       this.orderBy.direction + '&search_term=' +
@@ -270,6 +283,9 @@ export default {
     }
   },
   watch: {
+    source(val){
+      this.fetchItems()
+    },
     searchTerm(val) {
       if (this.autoSearch) {
         this.doSearch();
@@ -284,139 +300,145 @@ export default {
       500
     ),
     buttonClick(btn,row){
-      var par = row;
-      switch (btn.label) {
-        case AVAILABLE_BUTTONS['add'].label: {
-          this.$emit('add',par)
-        }
-        break;
-        case AVAILABLE_BUTTONS['delete'].label: {
-          this.$emit('delete',par)
-        }
-        break;
-        case AVAILABLE_BUTTONS['detail'].label: {
-          this.$emit('detail',par)
-        }
-        break;
-        case AVAILABLE_BUTTONS['download'].label: {
-          this.$emit('download',par)
-        }
-        break;
-        case AVAILABLE_BUTTONS['edit'].label: {
-          this.$emit('edit',par)
-        }
-        break;
-        case AVAILABLE_BUTTONS['print'].label: {
-          this.$emit('print',par)
-        }
-        break;
+      if (row) {
+        var par = _.merge(row,
+          {
+            primary: row[this.pagination.primary],
+            title:   row[this.pagination.title_column] || 'Cód: '+row[this.pagination.primary]
 
-        default:
-          break;
+          });
         }
-
-      // this.$emit('buttonClick',option)
-    },
-    clickSearchButton(event) {
-      if (event.target.tagName != "BUTTON") {
-        if (this.autoSearch) {
-          this.search()
-        }
-      } else {
-        if (!this.autoSearch) {
-          this.search()
-        }
-      }
-    },
-    changePage(page) {
-      if (this.pagination.current_page != page && page <= this.pagination.last_page && page > 0) {
-        this.pagination.current_page = page;
-        this.fetchItems(page);
-      }
-    },
-    search() {
-      if (this.searchPageBack == null) {
-        // this.searchPageBack = this.pagination.current_page;
-        this.pagination.current_page = 1;
-      }
-      if (this.searchTerm == '') {
-        this.pagination.current_page = this.searchPageBack;
-        this.searchPageBack = null;
-      }
-      this.fetchItems(this.pagination.current_page);
-    },
-    fetchItems(current_page) {
-      var self = this;
-      if(this.source!='')
-      axios.get(self.SourceUrl).then((res) => {
-        self.pagination = res.data;
-      }).catch((err) => {
-        self.showAlertError(err); //Mixin
-      });
-      $('[data-toggle="tooltip"]').tooltip();
-    },
-    infiniteHandler($state,scrollableId = null){
-      console.log('scrool Height: '+$('#'+scrollableId).scrollTop());
-      var self = this;
-      if(this.source!='')
-      setTimeout(function () {
-        self.pagination.current_page+=1;
-        axios.get(self.SourceUrl).then((res_s)=>{
-          let dados = res_s.data.data;
-
-          if (res_s.data.next_page_url == null) {
-            $state.complete();
+        switch (btn.label) {
+          case AVAILABLE_BUTTONS['add'].label: {
+            this.$emit('add')
           }
-          if (dados.length > 0) {
-            self.pagination.data = self.pagination.data.concat(dados);
-            $state.loaded();
-            if (scrollableId !=null) {
-              window.setTimeout(()=>{
-                $('#'+scrollableId).slimScroll({scrollTo:$('#'+scrollableId).scrollTop()})
-              }, 120);
+          break;
+          case AVAILABLE_BUTTONS['delete'].label: {
+            this.$emit('delete',par)
+          }
+          break;
+          case AVAILABLE_BUTTONS['detail'].label: {
+            this.$emit('detail',par)
+          }
+          break;
+          case AVAILABLE_BUTTONS['download'].label: {
+            this.$emit('download',par)
+          }
+          break;
+          case AVAILABLE_BUTTONS['edit'].label: {
+            this.$emit('edit',par)
+          }
+          break;
+          case AVAILABLE_BUTTONS['print'].label: {
+            this.$emit('print',par)
+          }
+          break;
+
+          default:
+            break;
+          }
+        },
+        clickSearchButton(event) {
+          if (event.target.tagName != "BUTTON") {
+            if (this.autoSearch) {
+              this.search()
+            }
+          } else {
+            if (!this.autoSearch) {
+              this.search()
             }
           }
-        },(res_e)=>{
-          self.showAlertError(res_e);
-        });
-      }, 1000)
-    },
-    toggleOrder(column) {
-      if (column === this.orderBy.column) {
-        this.orderBy.direction = this.orderBy.direction === 'desc' ? 'asc' : 'desc';
-      } else {
-        this.orderBy.column = column;
-        this.orderBy.direction = 'asc';
+        },
+        changePage(page) {
+          if (this.pagination.current_page != page && page <= this.pagination.last_page && page > 0) {
+            this.pagination.current_page = page;
+            this.fetchItems(page);
+          }
+        },
+        search() {
+          if (this.searchPageBack == null) {
+            // this.searchPageBack = this.pagination.current_page;
+            this.pagination.current_page = 1;
+          }
+          if (this.searchTerm == '') {
+            this.pagination.current_page = this.searchPageBack;
+            this.searchPageBack = null;
+          }
+          this.fetchItems(this.pagination.current_page);
+        },
+        fetchItems() {
+          var self = this;
+          this.isLoading = true;
+          if(this.source!='')
+          axios.get(self.SourceUrl).then((res) => {
+            this.isLoading = false;
+            self.pagination = res.data;
+          }).catch((err) => {
+            this.isLoading = false;
+            self.showAlertError(err); //Mixin
+          });
+        },
+        infiniteHandler($state,scrollableId = null){
+          var self = this;
+          if(this.source!='')
+          setTimeout(function () {
+            self.pagination.current_page+=1;
+            axios.get(self.SourceUrl).then((res_s)=>{
+              let dados = res_s.data.data;
+
+              if (res_s.data.next_page_url == null) {
+                $state.complete();
+              }
+              if (dados.length > 0) {
+                self.pagination.data = self.pagination.data.concat(dados);
+                $state.loaded();
+                if (scrollableId !=null) {
+                  window.setTimeout(()=>{
+                    $('#'+scrollableId).slimScroll({scrollTo:$('#'+scrollableId).scrollTop()})
+                  }, 120);
+                }
+              }
+            },(res_e)=>{
+              self.showAlertError(res_e);
+            });
+          }, 1000)
+        },
+        toggleOrder(column) {
+          if (column === this.orderBy.column) {
+            this.orderBy.direction = this.orderBy.direction === 'desc' ? 'asc' : 'desc';
+          } else {
+            this.orderBy.column = column;
+            this.orderBy.direction = 'asc';
+          }
+          this.fetchItems(this.pagination.current_page);
+        },
+        notHidden(value){
+          return this.pagination.hidden_columns == null || this.pagination.hidden_columns.map(x => x).indexOf(value) === -1;
+        },
+        loadButtons(){
+          this.buttons.forEach((val,i)=>{
+            var btn =  val.split(":");
+            var valid = Object.keys(AVAILABLE_BUTTONS).indexOf(btn[0]) !==-1;
+
+            if (valid) {
+              btn[1] = AVAILABLE_BUTTONS[btn[0]].places.indexOf(btn[1]) !== -1 ? btn[1] : AVAILABLE_BUTTONS[val].default_place;
+              if (btn[1] == 't') {
+                this.topButtons.push(AVAILABLE_BUTTONS[btn[0]])
+              }
+              if (btn[1] == 'r') {
+                this.rowButtons.push(AVAILABLE_BUTTONS[btn[0]])
+              }
+            }
+          });
+        },
       }
-      this.fetchItems(this.pagination.current_page);
-    },
-    notHidden(value){
-      return this.pagination.hidden_columns == null || this.pagination.hidden_columns.map(x => x).indexOf(value) === -1;
-    },
-    loadButtons(){
-      this.buttons.forEach((val,i)=>{
-        var btn =  val.split(":");
-        var valid = Object.keys(AVAILABLE_BUTTONS).indexOf(btn[0]) !==-1;
 
-        if (valid) {
-           btn[1] = AVAILABLE_BUTTONS[btn[0]].places.indexOf(btn[1]) !== -1 ? btn[1] : AVAILABLE_BUTTONS[val].default_place;
-           if (btn[1] == 't') {
-             this.topButtons.push(AVAILABLE_BUTTONS[btn[0]])
-           }
-           if (btn[1] == 'r') {
-             this.rowButtons.push(AVAILABLE_BUTTONS[btn[0]])
-           }
-        }
-      });
-    },
-  }
-
-}
-</script>
-<style media="screen">
-.table td.fit,
-.table th.fit {
-  white-space: nowrap;
-  width: 1%;
-}
-</style>
+    }
+    </script>
+    <style media="screen">
+    .table td.fit,
+    .table th.fit {
+      white-space: nowrap;
+      width: 1%;
+    }
+    </style>

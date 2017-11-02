@@ -9,7 +9,7 @@
     <div class="center-block">
       <div class="pull-left">
         <label for="descricao">Selecione a cor categoria</label>
-        <color-picker v-model="colorPicker"  />
+        <color-picker v-model="colorPicker" />
       </div>
       <div class="pull-right text-center">
         <label for="descricao">Cor selecionada</label>
@@ -23,27 +23,12 @@
 <script>
 import { Slider } from 'vue-color'
 import MainForm from './form_main.vue'
-
+/**
+ * @author Gilberto Prudêncio Vaz de Moraes <moraesdev@gmail.com>
+ * @type {Object}
+ */
 var defaultProps = {
-  hex: '#194d33',
-  hsl: {
-    h: 150,
-    s: 0.5,
-    l: 0.2,
-    a: 1
-  },
-  hsv: {
-    h: 150,
-    s: 0.66,
-    v: 0.30,
-    a: 1
-  },
-  rgba: {
-    r: 25,
-    g: 77,
-    b: 51,
-    a: 1
-  },
+  hex:"#A579D2",
   a: 1
 }
 
@@ -68,10 +53,14 @@ export default {
     }
   },
   mounted(){
-    this.colorPicker = defaultProps 
+    this.colorPicker = defaultProps
+    if (this.entitySrc != null) {
+      this.colorPicker.hex = this.entitySrc.color
+    }
   },
   methods:{
     // this func by me me =) referes BY Pankaj Parashar https://codepen.io/pankajparashar/pen/oFzIg
+    //unused yet
     hexToRGB(hexColor){
       var rgb = [],
       fail = false,
@@ -88,6 +77,7 @@ export default {
       return fail ? '' : rgb;
     },
     // this function BY Pankaj Parashar https://codepen.io/pankajparashar/pen/oFzIg
+    //unused yet
     rgbToHsl(r, g, b){
 
       r /= 255, g /= 255, b /= 255;
@@ -108,7 +98,7 @@ export default {
         h /= 6;
       }
 
-      return [(h*100+0.5)|0, ((s*100+0.5)|0) + '%', ((l*100+0.5)|0) + '%'];
+      return [(h*100+0.5)|0, ((s*100+0.5)|0)/100, ((l*100+0.5)|0)/100];
     }
   }
 }

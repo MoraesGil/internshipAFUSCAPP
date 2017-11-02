@@ -1,12 +1,17 @@
 <?php
-
+/**
+ * @author Gilberto Prudêncio Vaz de Moraes <moraesdev@gmail.com>
+ */
 namespace App;
 
 use App\CustomModel;
 use App\Helper\Traits\DataViewer;
+use Illuminate\Database\Eloquent\SoftDeletes;
 
 class Categoria extends CustomModel {
-  use DataViewer;
+  use DataViewer,SoftDeletes;
+
+
   protected $fillable = ['label','descricao','color'];
   public $timestamps = true;
 
@@ -14,8 +19,6 @@ class Categoria extends CustomModel {
     'criado_em',
     'atualizado_em',
     'excluido_em',
-    'color',
-    'label',
   ];
 
   //Accessors
@@ -27,8 +30,12 @@ class Categoria extends CustomModel {
 
   }
 
+  protected $dv_title_column ='custom_label';
+
   private $dv_hidden = [
     'id',
+    'color',
+    'label',
   ];
 
   private $dv_config = [
