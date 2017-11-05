@@ -55,13 +55,24 @@ trait DataViewer {
     return false;
   }
 
+  private function sort_columns($columns){
+    if (is_array($this->dv_config) && count($this->dv_config)>0) {
+       $columns = array_merge(array_flip(collect($this->dv_config)->pluck('name')->toArray()), $columns);
+    }
+    return $columns;
+  }
+
   /**
   * [gm - mergeColumnsPaginate description]
   * @param  [Illuminate/Database/Query/Builder] $pagination [required]
   * @return [array]
   */
   private function mergeColumnsPaginate($pagination){
-    return collect(['columns'=>$this->dv_columns,'primary'=>$this->primaryKey,'title_column'=>$this->dv_title_column,'hidden_columns'=> $this->dv_hidden])->merge($pagination);
+      $pagination = $pagination->toArray();
+      foreach ($pagination['data'] as $key => $value) {
+        $pagination['data'][$key] = $this->sort_columns($value);
+      }  
+     return collect(['columns'=>$this->sort_columns($this->dv_columns),'primary'=>$this->primaryKey,'title_column'=>$this->dv_title_column,'hidden_columns'=> $this->dv_hidden])->merge($pagination);
   }
 
   /**

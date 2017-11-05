@@ -27,7 +27,7 @@
         <i class="fa fa-spinner fa-pulse fa-fw"></i>
       </h1>
 
-      <div class="table-responsive" v-if="pagination.total">
+      <div class="table-responsive" v-if="pagination.total && !isLoading">
         <table class="table table-hover table-striped table-bordered">
           <thead>
             <tr>
@@ -104,7 +104,7 @@
 
 <script>
 /**
- * @author Gilberto Prudêncio Vaz de Moraes <moraesdev@gmail.com> 
+ * @author Gilberto Prudêncio Vaz de Moraes <moraesdev@gmail.com>
  */
 import axios from 'axios'
 import _ from 'lodash'

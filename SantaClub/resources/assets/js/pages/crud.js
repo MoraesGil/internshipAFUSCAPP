@@ -1,3 +1,5 @@
+
+
 // @author Gilberto Prudêncio Vaz de Moraes <moraesdev@gmail.com>
 require('../main.js')
 import DataViewer    from '../modules/dataviewer/gridView.vue'
@@ -18,6 +20,7 @@ new Vue({
   },
   data(){
     return {
+      modalSize:'md',
       resourceUrl: '',
       form_modal : false,
       entity : {}

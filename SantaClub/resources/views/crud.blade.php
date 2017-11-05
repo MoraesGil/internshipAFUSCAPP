@@ -5,7 +5,7 @@
   <div id="app">
     <input type="hidden" name="" value="{{route($resourceName.'.index')}}" id="resourceUrl">
 
-    <modal v-model="form_modal" title="Cadastro" @hide="form_modal = false">
+    <modal v-model="form_modal" title="Cadastro" @hide="form_modal = false" :size="modalSize" :auto-focus="true">
       <form v-if="form_modal" is="{{$resourceName}}"  :target-url="resourceUrl" :entity-src="entity"></form>
       <div slot="footer">
         <button type="button" class="btn btn-default" @click="form_modal = false">Cancel</button>
