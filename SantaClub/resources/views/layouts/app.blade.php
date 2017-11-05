@@ -114,6 +114,7 @@
   <script src="{{ elixir('js/vendor.js')}}"></script>
 
   <script type="text/javascript">
+  var isDevMode = Boolean({{ env('APP_DEBUG') === true }}) ;
 
   var MinRightColHeight;
   $( document ).ready(function() {

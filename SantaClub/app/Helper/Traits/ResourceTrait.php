@@ -26,7 +26,7 @@ trait ResourceTrait {
   * @return \Illuminate\Http\Response
   */
   public function index(Request $request) {
-    if ($request->ajax() || $request->isJson() || $request->get("json") !=null) {
+    if ($request->expectsJson() || $request->get("json") !=null) {
       return $this->getData($request);
     }
     else {
@@ -68,10 +68,18 @@ trait ResourceTrait {
   * @param  \Illuminate\Http\Request  $request
   * @return \Illuminate\Http\Response
   */
-  public function store(Request $request) {
+  public function store(Request $request) { 
+    if ($this->Model->hasRules()) {
+      if (!$this->Model->validate($request->all())) {
+        if ($request->expectsJson()) {
+          return response()->json($this->Model->errors, 400);
+        }
+        return redirect()->route($this->resourceName.'.index')->withErrors($this->Model->errors);
+      }
+    }
     $new = $this->Model->create($request->all());
 
-    if ($request->ajax() || $request->isJson()) {
+    if ($request->expectsJson()) {
       return response()->json($new, 201);
     }else {
       Session::flash('success_message','Cadastrado realizado!');
@@ -109,9 +117,18 @@ trait ResourceTrait {
   * @return \Illuminate\Http\Response
   */
   public function update(Request $request, $id) {
+    if ($this->Model->hasRules()) {
+       if (!$this->Model->validate($request->all(),$id)) {
+         if ($request->expectsJson()) {
+           return response()->json($this->Model->errors, 400);
+         }
+         return redirect()->route($this->resourceName.'.index')->withErrors($this->Model->errors);
+       }
+    }
+
     $model = $this->Model->findOrFail($id)->update($request->all());
 
-    if ($request->ajax() || $request->isJson()) {
+    if ($request->expectsJson()) {
       return response()->json($model, 200);
     }else {
       Session::flash('success_message','Atualizado!');
@@ -128,13 +145,13 @@ trait ResourceTrait {
   */
   public function destroy(Request $request,$id) {
     $model = $this->Model->findOrFail($id)->delete();
-    if ($request->ajax() || $request->isJson()) {
+    if ($request->expectsJson()) {
       return response()->json(null, 204);
     }else {
       Session::flash('success_message','Excluido!');
       return redirect()->route($this->resourceName.'.index');
     }
-
   }
+
 
 }

@@ -44,21 +44,27 @@ class Handler extends ExceptionHandler
   */
   public function render($request, Exception $exception)
   {
+    $status = 500;//DEFAULT
+    $trace = $exception->getTrace()[0]['class'];
+    $msg = 'msg->'.$exception->getMessage().' | trace-> '.$trace;
+
     //@author Gilberto Prudêncio Vaz de Moraes <moraesdev@gmail.com>
     if ($request->expectsJson()) {
-      $status = 500;//DEFAULT
-      $trace = $exception->getTrace()[0]['class'];
-      $msg = $exception->getMessage().'----'.$trace;
-
       if ($this->isHttpException($exception)) {
         $status = $exception->getStatusCode();
       }
 
-      $msg = env('APP_DEBUG')=='false' ? encrypt($msg) : $msg;
-      return response()->json([
-        'message' => 'Informe o administrador do sistema',
-        'errors'  => [$msg]
-      ], $status);
+      if (env('APP_DEBUG') === false) {
+        return response()->json([
+          'message' => 'Informe o administrador do sistema',
+          'errors'  => [encrypt($msg)]
+        ], $status);
+      }else {
+        return response()->json([
+          'errors'  => [$msg]
+        ], $status);
+      }
+      
     }
 
     return parent::render($request, $exception);

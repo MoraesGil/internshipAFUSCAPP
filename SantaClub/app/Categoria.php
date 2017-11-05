@@ -7,13 +7,19 @@ namespace App;
 use App\CustomModel;
 use App\Helper\Traits\DataViewer;
 use Illuminate\Database\Eloquent\SoftDeletes;
+use App\Helper\Classes\BatmanBelt;
 
 class Categoria extends CustomModel {
   use DataViewer,SoftDeletes;
 
-
   protected $fillable = ['label','descricao','color'];
   public $timestamps = true;
+
+  protected $rules = [
+    'label'=>'required|max:45|min:3|unique:categorias,label,@except,id',
+    'descricao'=>'max:100',
+    'color'=>['required','regex:/'.BatmanBelt::HEX_PATTERN.'/'],
+  ];
 
   protected $hidden = [
     'criado_em',

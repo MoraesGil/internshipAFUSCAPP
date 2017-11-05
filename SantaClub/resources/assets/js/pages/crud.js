@@ -1,5 +1,3 @@
-
-
 // @author Gilberto Prudêncio Vaz de Moraes <moraesdev@gmail.com>
 require('../main.js')
 import DataViewer    from '../modules/dataviewer/gridView.vue'
@@ -23,10 +21,10 @@ new Vue({
       modalSize:'md',
       resourceUrl: '',
       form_modal : false,
-      entity : {}
+      entity : {},
     }
   },
-  mounted(){
+  mounted(){ 
     this.resourceUrl = $("#resourceUrl").val();
     this.eventHub.$on('savedChanges',this.savedChanges);
   },
@@ -77,13 +75,12 @@ new Vue({
           toastr.success(par.title+' foi excluído com sucesso.');
         },(res) => {
           console.log(res);
-          self.showAlertError(res)
+          self.showResponseError(res)
         });
       }) //end swal
     },
 
     show(){
-
     },
 
 

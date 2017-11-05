@@ -253,7 +253,7 @@ export default {
       axios.get(this.categoriesSource).then((res_s)=>{
         let dados = res_s.data.data;
       },(res_e)=>{
-        self.showAlertError(res_e);
+        self.showResponseError(res_e);
       });
     },
     applyFilters(){

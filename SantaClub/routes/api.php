@@ -16,3 +16,10 @@ use Illuminate\Http\Request;
 Route::get('/user', function (Request $request) {
     return $request->user();
 })->middleware('auth:api');
+
+
+Route::group([
+  'as'=>'cat.'
+], function() {
+  Route::resource('/categorias', 'CategoriaController', ['except' => ['create', 'edit', 'show']]);
+});

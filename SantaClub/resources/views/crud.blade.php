@@ -9,7 +9,7 @@
       <form v-if="form_modal" is="{{$resourceName}}"  :target-url="resourceUrl" :entity-src="entity"></form>
       <div slot="footer">
         <button type="button" class="btn btn-default" @click="form_modal = false">Cancel</button>
-        <button type="button" class="btn btn-success" @click="saveChanges">Gravar</button>
+        <button type="button" class="btn btn-success" @click="saveChanges">Gravar</button> 
       </div>
     </modal>
 

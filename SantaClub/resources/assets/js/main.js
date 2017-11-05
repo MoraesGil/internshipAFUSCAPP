@@ -10,50 +10,57 @@ if (token) {
 }
 
 /**
- * GM - My mixin loads commun data to all my components
- * @type {[VueMixin]}
- */
+* GM - My mixin loads commun data to all my components
+* @type {[VueMixin]}
+*/
 const eventHub = new Vue() // Single event hub
 Vue.mixin({
   mounted: function () {
-    // console.log('mixin loaded de boas'+this._uid);
+    // console.log('mixin loaded de boas'+this._uid); 
   },
   data: function () {
     return {
-      eventHub: eventHub
+      eventHub: eventHub,
     }
   },
   methods: {
-    showAlertError: function (err) {
-      var error = err.response.data;
-      var errors = '';
-      if (error.errors) {
-        if (Array.isArray(error.errors) || typeof error.errors  !== 'string')
-        $.each(error.errors,(i,val)=>{
-          errors += Object.keys(error.errors)[0] != i ?  " - "+val : val;
+    showResponseError: function (err) {
+      if (err.response.status == 500) {
+        var errorText = isDevMode ? '' : 'Se possivel não feche a tela para identificarmos e corrigir o erro.';
+        errors = err.response.data;
+        $.each(errors,(i,val)=>{
+          errorText += " * "+val+"<br>";
         })
-        if (err.status == 500) {
-          console.log('erro cod: '+errors);
-          errors = 'Se possivel não feche a tela para identificarmos e corrigir o erro.'
+
+        swal({
+          title: 'Erro no sistema',
+          type: 'error',
+          html: errorText,
+          allowOutsideClick: false,
+          confirmButtonText: 'Fechar',
+        })
+      }else {
+        toastr.options = {
+          "closeButton": true,
+          "debug": false,
+          "newestOnTop": true,
+          "progressBar": true,
+          "positionClass": "toast-top-right",
+          "preventDuplicates": true,
+          "onclick": null,
+          "showDuration": "300",
+          "hideDuration": "1000",
+          "timeOut": "5000",
+          "extendedTimeOut": "1000",
+          "showEasing": "swing",
+          "hideEasing": "linear",
+          "showMethod": "fadeIn",
+          "hideMethod": "fadeOut"
         }
-      }
-      if (error.message) {
-        swal({
-          title: error.message,
-          type: 'error',
-          text: errors,
-          allowOutsideClick: false,
-          confirmButtonText: 'Fechar',
+        $.each(err.response.data,(i,val)=>{
+          toastr.warning(val,'Atenção')
         })
-      } else {
-        swal({
-          title: 'Erro',
-          type: 'error',
-          text: err,
-          allowOutsideClick: false,
-          confirmButtonText: 'Fechar',
-        })
-        console.log(err);
+        toastr.options = {}; //clear toast options
       }
     },
     showTeste(){

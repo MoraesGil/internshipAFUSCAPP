@@ -375,7 +375,7 @@ export default {
             self.pagination = res.data;
           }).catch((err) => {
             this.isLoading = false;
-            self.showAlertError(err); //Mixin
+            self.showResponseError(err); //Mixin
           });
         },
         infiniteHandler($state,scrollableId = null){
@@ -399,7 +399,7 @@ export default {
                 }
               }
             },(res_e)=>{
-              self.showAlertError(res_e);
+              self.showResponseError(res_e);
             });
           }, 1000)
         },

@@ -50,6 +50,8 @@ export default {
       return obj1;
     },
     sendForm(){
+      toastr.clear();
+      self = this
       try {
         if (this.entitySrc ==null) {
           axios.post(this.targetUrl, this.dataForm)
@@ -58,7 +60,7 @@ export default {
              toastr.success('Cadastrado com sucesso')
           })
           .catch((e) => {
-            this.errors.push(e)
+             self.showResponseError(e)
           })
         }else {
           axios.put(this.targetUrl+'/'+this.entitySrc.primary, this.dataForm)
@@ -66,11 +68,10 @@ export default {
             this.eventHub.$emit('savedChanges')
              toastr.success('Atualizado com sucesso')
           })
-          .catch(e => {
-            this.errors.push(e)
+          .catch((e) => {
+             self.showResponseError(e)
           })
         }
-
       } catch (ex) {
        console.log(ex);
       }

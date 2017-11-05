@@ -3,7 +3,7 @@
     <label for="cat_name">Titulo</label>
     <input type="text" id="cat_name" class="form-control"  placeholder="ex: desepesas, manutenção  ..." data-action="auto-focus" v-model="dataForm.label"/>
     <br>
-    <label for="descricao">Descricão</label>
+    <label for="descricao">Descrição</label>
     <textarea id="descricao" placeholder="..." class="form-control" v-model="dataForm.descricao"></textarea>
     <br>
     <div class="center-block">
