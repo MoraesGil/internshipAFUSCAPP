@@ -1,6 +1,6 @@
 // @author Gilberto Prudêncio Vaz de Moraes <moraesdev@gmail.com>
 require('../main.js')
-import DataViewer    from '../modules/dataviewer/gridView.vue'
+import DataViewer    from '../modules/dataviewer/gridViewer.vue'
 import { Modal }     from 'uiv'
 
 
@@ -51,7 +51,7 @@ new Vue({
 
     savedChanges(){
       this.form_modal = false;
-      this.eventHub.$emit('refreshGridView');
+      this.eventHub.$emit('refreshgridViewer');
     },
 
     destroy(par) {
@@ -71,7 +71,7 @@ new Vue({
         type:                'warning',
       }).then(function () {
         axios.delete(delete_url).then((res) => {
-          self.eventHub.$emit('refreshGridView');
+          self.eventHub.$emit('refreshgridViewer');
           toastr.success(par.title+' foi excluído com sucesso.');
         },(res) => {
           console.log(res);

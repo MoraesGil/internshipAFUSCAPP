@@ -32,7 +32,7 @@
           <thead>
             <tr>
               <template v-for="(column,key) in pagination.columns ">
-                <th v-if="notHidden(key)" @click="toggleOrder(key)">
+                <th v-if="notHidden(key)" @click="oderBy(key)">
                   <span>{{column}}</span>
                   <span v-if="key === orderBy.column">
                     <span v-if="orderBy.direction === 'desc'"><i class="fa fa-sort-amount-desc"></i></span>
@@ -104,10 +104,8 @@
 
 <script>
 /**
- * @author Gilberto Prudêncio Vaz de Moraes <moraesdev@gmail.com>
- */
-import axios from 'axios'
-import _ from 'lodash'
+* @author Gilberto Prudêncio Vaz de Moraes <moraesdev@gmail.com>
+*/
 const AVAILABLE_BUTTONS = {
   add : {
     label : 'Novo',
@@ -148,31 +146,16 @@ const AVAILABLE_BUTTONS = {
 };
 
 /**
-* Componente gridView
+* Componente gridViewer
 * @author Gilberto Prudêncio Vaz de Moraes <moraesdev@gmail.com>
 * @type {Vue Component}
 */
+import BaseViewer      from './baseViewer.vue'
+
 export default {
+  extends: BaseViewer,
   props: {
-    source: {
-      type: String,
-      default: ''
-    },
-    searchable: {
-      type: Boolean,
-      default: true
-    },
-    title: {
-      type: String,
-      default: 'Title'
-    },
     optionsrow: {
-      type: Array,
-      default: function() {
-        return []
-      }
-    },
-    otherFilters: {
       type: Array,
       default: function() {
         return []
@@ -186,12 +169,11 @@ export default {
     }
   },
   mounted() {
-    this.fetchItems();
     this.loadButtons();
-    this.eventHub.$on('refreshGridView',this.fetchItems);
+    this.eventHub.$on('refreshgridViewer',this.fetchItems);
   },
   destroyed: function() {
-    this.eventHub.$off('refreshGridView');
+    this.eventHub.$off('refreshgridViewer');
   },
   data() {
     return {
@@ -219,30 +201,7 @@ export default {
     }
   },
   computed: {
-    Filters(){
-      var filtros;
-      try {
-        filtros = this.otherFilters.map(function(x) {
-          return '&'+Object.keys(x)+'='+x[Object.keys(x)]
-        })
-      }
-      catch(err) {
-        filtros = ''
-        console.log(err.message);
-      }
-      return filtros
-    },
-    SourceUrl(){
-      if (this.source.trim() == '') {
-        return '';
-      }
-      var url = this.source + '?order_column=' +
-      this.orderBy.column + '&order_direction=' +
-      this.orderBy.direction + '&search_term=' +
-      this.searchTerm.trim() + '&page=' + this.pagination.current_page+this.Filters
 
-      return url.replace('custom_','');
-    },
     hasOptionsRow(){
       return this.validOptionsRow.length>0;
     },
@@ -254,6 +213,7 @@ export default {
         return this.rowOptionsList.indexOf(el) >= 0;
       });
     },
+
     isActived: function() {
       return this.pagination.current_page;
     },
@@ -293,19 +253,12 @@ export default {
     },
   },
   methods: {
-    doSearch:_.debounce(
-      function () {
-        this.search()
-      },
-      500
-    ),
     buttonClick(btn,row){
       if (row) {
         var par = _.merge(row,
           {
             primary: row[this.pagination.primary],
             title:   row[this.pagination.title_column] || 'Cód: '+row[this.pagination.primary]
-
           });
         }
         switch (btn.label) {
@@ -363,52 +316,6 @@ export default {
           if (this.searchTerm == '') {
             this.pagination.current_page = this.searchPageBack;
             this.searchPageBack = null;
-          }
-          this.fetchItems(this.pagination.current_page);
-        },
-        fetchItems() {
-          var self = this;
-          this.isLoading = true;
-          if(this.source!='')
-          axios.get(self.SourceUrl).then((res) => {
-            this.isLoading = false;
-            self.pagination = res.data;
-          }).catch((err) => {
-            this.isLoading = false;
-            self.showResponseError(err); //Mixin
-          });
-        },
-        infiniteHandler($state,scrollableId = null){
-          var self = this;
-          if(this.source!='')
-          setTimeout(function () {
-            self.pagination.current_page+=1;
-            axios.get(self.SourceUrl).then((res_s)=>{
-              let dados = res_s.data.data;
-
-              if (res_s.data.next_page_url == null) {
-                $state.complete();
-              }
-              if (dados.length > 0) {
-                self.pagination.data = self.pagination.data.concat(dados);
-                $state.loaded();
-                if (scrollableId !=null) {
-                  window.setTimeout(()=>{
-                    $('#'+scrollableId).slimScroll({scrollTo:$('#'+scrollableId).scrollTop()})
-                  }, 120);
-                }
-              }
-            },(res_e)=>{
-              self.showResponseError(res_e);
-            });
-          }, 1000)
-        },
-        toggleOrder(column) {
-          if (column === this.orderBy.column) {
-            this.orderBy.direction = this.orderBy.direction === 'desc' ? 'asc' : 'desc';
-          } else {
-            this.orderBy.column = column;
-            this.orderBy.direction = 'asc';
           }
           this.fetchItems(this.pagination.current_page);
         },

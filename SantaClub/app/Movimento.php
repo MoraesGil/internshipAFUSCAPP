@@ -49,18 +49,16 @@ class Movimento extends CustomModel {
   ];
 
   //Accessors
-  protected $appends = ['total_parcial','categoria_label','categoria_cor','soma_parcial'];
+  protected $appends = ['total_parcial','categoria_label','soma_parcial'];
 
   //mutators
   public function getTotalParcialAttribute() {
     return floatval($this->parciais()->sum('valor'));
   }
   public function getCategoriaLabelAttribute() {
-    return $this->categoria->label;
+    return $this->categoria->custom_label;
   }
-  public function getCategoriaCorAttribute() {
-    return $this->categoria->color;
-  }
+
   public function getDtVencimentoAttribute($value) {
     return Carbon::parse($value)->format('d/m/Y');
   }
@@ -80,7 +78,7 @@ class Movimento extends CustomModel {
   }
 
   public function categoria() {
-    return $this->belongsTo('App\Categoria');
+    return $this->belongsTo(Categoria::class);
   }
 
   public function transferencia() {

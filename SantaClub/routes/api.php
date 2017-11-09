@@ -18,8 +18,4 @@ Route::get('/user', function (Request $request) {
 })->middleware('auth:api');
 
 
-Route::group([
-  'as'=>'cat.'
-], function() {
-  Route::resource('/categorias', 'CategoriaController', ['except' => ['create', 'edit', 'show']]);
-});
+ 

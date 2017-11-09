@@ -16,12 +16,18 @@ Auth::routes();
 
 Route::get('/error/{log}', function ($log) {
   dd(decrypt($log));
-}); 
+});
 
 Route::group(['middleware' => 'auth'], function () {
 
   Route::get('/', 'HomeController@index')->name('home');
   Route::get('/home', 'HomeController@index');
+
+  Route::group([
+    'as'=>'ass.'
+  ], function() {
+    Route::resource('/associados', 'AssociadoController', ['except' => ['create', 'edit', 'show']]);
+  });
 
   Route::group([
     'as'=>'mov.'

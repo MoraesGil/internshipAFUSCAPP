@@ -49,33 +49,36 @@ export default {
       obj1[p] = typeof obj2[p] === 'object' ? merge(obj1[p], obj2[p]) : obj2[p];
       return obj1;
     },
-    sendForm(){
-      toastr.clear();
-      self = this
-      try {
-        if (this.entitySrc ==null) {
-          axios.post(this.targetUrl, this.dataForm)
-          .then((res) => {
-            this.eventHub.$emit('savedChanges')
-             toastr.success('Cadastrado com sucesso')
-          })
-          .catch((e) => {
-             self.showResponseError(e)
-          })
-        }else {
-          axios.put(this.targetUrl+'/'+this.entitySrc.primary, this.dataForm)
-          .then(res => {
-            this.eventHub.$emit('savedChanges')
-             toastr.success('Atualizado com sucesso')
-          })
-          .catch((e) => {
-             self.showResponseError(e)
-          })
+    sendForm:_.debounce(
+      function () {
+        toastr.clear();
+        self = this
+        try {
+          if (this.entitySrc ==null) {
+            axios.post(this.targetUrl, this.dataForm)
+            .then((res) => {
+              this.eventHub.$emit('savedChanges')
+               toastr.success('Cadastrado com sucesso')
+            })
+            .catch((e) => {
+               self.showResponseError(e)
+            })
+          }else {
+            axios.put(this.targetUrl+'/'+this.entitySrc.primary, this.dataForm)
+            .then(res => {
+              this.eventHub.$emit('savedChanges')
+               toastr.success('Atualizado com sucesso')
+            })
+            .catch((e) => {
+               self.showResponseError(e)
+            })
+          }
+        } catch (ex) {
+         console.log(ex);
         }
-      } catch (ex) {
-       console.log(ex);
-      }
-    }
+      },
+      200
+    ),
   }
 }
 </script>

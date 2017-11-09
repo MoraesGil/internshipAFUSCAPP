@@ -120,7 +120,8 @@
                   </div>
                 </div>
                 <div class="col-xs-3 col-sm-3 col-md-4" v-if="!miniMode">
-                  <i class="fa fa-square fa-fw" :style="{color:mov.categoria_cor}"></i> {{mov.categoria_label}}
+                  <span v-html="mov.categoria_label">
+                </span>
                 </div>
                 <div :class="valueColumnSize">
                   {{mov.valor}}
@@ -174,9 +175,7 @@
 </template>
 
 <script>
-import DataViewer      from '../DataViewer/gridView.vue'
-import InfiniteLoading from 'vue-infinite-loading';
-import moment          from 'moment'
+import InfinityViewer      from '../DataViewer/infinityViewer.vue'  
 import { Popover }     from 'uiv'
 
 /**
@@ -184,9 +183,9 @@ import { Popover }     from 'uiv'
  * @type {Vue Component}
  */
 export default {
-  extends: DataViewer,
+  extends: InfinityViewer,
   components: {
-    InfiniteLoading, Popover
+    Popover
   },
   props: {
     heightPercent: {
