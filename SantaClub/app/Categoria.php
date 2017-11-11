@@ -33,7 +33,6 @@ class Categoria extends CustomModel {
   //mutators
   public function getCustomLabelAttribute() {
     return '<i class="fa fa-square fa-fw" style="color:'.$this->color.'"></i> '.$this->label;
-
   }
 
   protected $dv_title_column ='custom_label';
@@ -67,7 +66,7 @@ class Categoria extends CustomModel {
   ];
 
   public function movimentos() {
-    return $this->hasMany('App\Movimento');
+    return $this->hasMany(Movimento::class);
   }
 
 

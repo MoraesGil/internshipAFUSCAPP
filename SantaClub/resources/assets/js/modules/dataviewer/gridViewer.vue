@@ -10,6 +10,7 @@
       <div class="clearfix"></div>
     </div>
     <div class="x_content">
+
       <div class="row">
         <div class="col-md-10 col-sm-8 col-xs-9 form-group has-feedback">
           <input type="text" class="form-control" name="busca" v-model="searchTerm" placeholder="Buscar">
@@ -23,47 +24,48 @@
       </div>
       <h1 v-if="!pagination.total && !isLoading" class="text-center">Não há dados para ser exibidos</h1>
 
-      <h1 class="text-center" style="margin-top:60px;" v-show="isLoading">
-        <i class="fa fa-spinner fa-pulse fa-fw"></i>
-      </h1>
-
-      <div class="table-responsive" v-if="pagination.total && !isLoading">
-        <table class="table table-hover table-striped table-bordered">
-          <thead>
-            <tr>
-              <template v-for="(column,key) in pagination.columns ">
-                <th v-if="notHidden(key)" @click="oderBy(key)">
-                  <span>{{column}}</span>
-                  <span v-if="key === orderBy.column">
-                    <span v-if="orderBy.direction === 'desc'"><i class="fa fa-sort-amount-desc"></i></span>
-                    <span v-else><i class="fa fa-sort-amount-asc"></i></span>
-                  </span>
-                  <span v-else><i class="fa fa-sort"></i></span>
-                </th>
-              </template>
-              <template v-if="rowButtons.length>0">
-                <th class="fit"> opções <i class="fa fa-gear fa-fw"></i> </th>
-              </template>
-            </tr>
-          </thead>
-          <tbody>
-            <tr v-for="row in pagination.data">
-              <template v-for="(value,key) in row">
-                <td v-if="notHidden(key)">
-                  <div v-html="value"></div>
-                </td>
-              </template>
-
-              <td class="fit text-center" v-if="rowButtons.length>0">
-                <template v-for="btn in rowButtons">
-                  <a data-toggle="tooltip" :title="btn.label" class="btn btn-default btn-xs" @click="buttonClick(btn,row)">
-                    <i :class="btn.icon"></i>
-                  </a>
+      <div class="wrap">
+        <div id="loading-wrap" v-show="isLoading">
+          <i class="fa fa-spinner fa-pulse fa-fw fa-3x" style="  top: 50%; position: inherit; left: 50%; color: rgb(43, 64, 85);"></i>
+        </div>
+        <div class="table-responsive" v-if="pagination.total">
+          <table class="table table-hover table-striped table-bordered">
+            <thead>
+              <tr>
+                <template v-for="(column,key) in pagination.columns ">
+                  <th v-if="notHidden(key)" @click="oderBy(key)">
+                    <span>{{column}}</span>
+                    <span v-if="key === orderBy.column">
+                      <span v-if="orderBy.direction === 'desc'"><i class="fa fa-sort-amount-desc"></i></span>
+                      <span v-else><i class="fa fa-sort-amount-asc"></i></span>
+                    </span>
+                    <span v-else><i class="fa fa-sort"></i></span>
+                  </th>
                 </template>
-              </td>
-            </tr>
-          </tbody>
-        </table>
+                <template v-if="rowButtons.length>0">
+                  <th class="fit"> opções <i class="fa fa-gear fa-fw"></i> </th>
+                </template>
+              </tr>
+            </thead>
+            <tbody>
+              <tr v-for="row in pagination.data">
+                <template v-for="(value,key) in row">
+                  <td v-if="notHidden(key)">
+                    <div v-html="value"></div>
+                  </td>
+                </template>
+
+                <td class="fit text-center" v-if="rowButtons.length>0">
+                  <template v-for="btn in rowButtons">
+                    <a data-toggle="tooltip" :title="btn.label" class="btn btn-default btn-xs" @click="buttonClick(btn,row)">
+                      <i :class="btn.icon"></i>
+                    </a>
+                  </template>
+                </td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
       </div>
       <hr>
       <!-- BEGIN FOOTER -->
@@ -99,7 +101,6 @@
       </div>
     </div>
   </div>
-
 </template>
 
 <script>
@@ -201,7 +202,44 @@ export default {
     }
   },
   computed: {
+    buttonClick(btn,row){
+      if (row) {
+        var par = _.merge(row,
+          {
+            primary: row[this.pagination.primary],
+            title:   row[this.pagination.title_column] || 'Cód: '+row[this.pagination.primary]
+          });
+        }
+        switch (btn.label) {
+          case AVAILABLE_BUTTONS['add'].label: {
+            this.$emit('add')
+          }
+          break;
+          case AVAILABLE_BUTTONS['delete'].label: {
+            this.$emit('delete',par)
+          }
+          break;
+          case AVAILABLE_BUTTONS['detail'].label: {
+            this.$emit('detail',par)
+          }
+          break;
+          case AVAILABLE_BUTTONS['download'].label: {
+            this.$emit('download',par)
+          }
+          break;
+          case AVAILABLE_BUTTONS['edit'].label: {
+            this.$emit('edit',par)
+          }
+          break;
+          case AVAILABLE_BUTTONS['print'].label: {
+            this.$emit('print',par)
+          }
+          break;
 
+          default:
+            break;
+          }
+        },
     hasOptionsRow(){
       return this.validOptionsRow.length>0;
     },
@@ -253,99 +291,74 @@ export default {
     },
   },
   methods: {
-    buttonClick(btn,row){
-      if (row) {
-        var par = _.merge(row,
-          {
-            primary: row[this.pagination.primary],
-            title:   row[this.pagination.title_column] || 'Cód: '+row[this.pagination.primary]
-          });
+
+    clickSearchButton(event) {
+      if (event.target.tagName != "BUTTON") {
+        if (this.autoSearch) {
+          this.search()
         }
-        switch (btn.label) {
-          case AVAILABLE_BUTTONS['add'].label: {
-            this.$emit('add')
-          }
-          break;
-          case AVAILABLE_BUTTONS['delete'].label: {
-            this.$emit('delete',par)
-          }
-          break;
-          case AVAILABLE_BUTTONS['detail'].label: {
-            this.$emit('detail',par)
-          }
-          break;
-          case AVAILABLE_BUTTONS['download'].label: {
-            this.$emit('download',par)
-          }
-          break;
-          case AVAILABLE_BUTTONS['edit'].label: {
-            this.$emit('edit',par)
-          }
-          break;
-          case AVAILABLE_BUTTONS['print'].label: {
-            this.$emit('print',par)
-          }
-          break;
-
-          default:
-            break;
-          }
-        },
-        clickSearchButton(event) {
-          if (event.target.tagName != "BUTTON") {
-            if (this.autoSearch) {
-              this.search()
-            }
-          } else {
-            if (!this.autoSearch) {
-              this.search()
-            }
-          }
-        },
-        changePage(page) {
-          if (this.pagination.current_page != page && page <= this.pagination.last_page && page > 0) {
-            this.pagination.current_page = page;
-            this.fetchItems(page);
-          }
-        },
-        search() {
-          if (this.searchPageBack == null) {
-            // this.searchPageBack = this.pagination.current_page;
-            this.pagination.current_page = 1;
-          }
-          if (this.searchTerm == '') {
-            this.pagination.current_page = this.searchPageBack;
-            this.searchPageBack = null;
-          }
-          this.fetchItems(this.pagination.current_page);
-        },
-        notHidden(value){
-          return this.pagination.hidden_columns == null || this.pagination.hidden_columns.map(x => x).indexOf(value) === -1;
-        },
-        loadButtons(){
-          this.buttons.forEach((val,i)=>{
-            var btn =  val.split(":");
-            var valid = Object.keys(AVAILABLE_BUTTONS).indexOf(btn[0]) !==-1;
-
-            if (valid) {
-              btn[1] = AVAILABLE_BUTTONS[btn[0]].places.indexOf(btn[1]) !== -1 ? btn[1] : AVAILABLE_BUTTONS[val].default_place;
-              if (btn[1] == 't') {
-                this.topButtons.push(AVAILABLE_BUTTONS[btn[0]])
-              }
-              if (btn[1] == 'r') {
-                this.rowButtons.push(AVAILABLE_BUTTONS[btn[0]])
-              }
-            }
-          });
-        },
+      } else {
+        if (!this.autoSearch) {
+          this.search()
+        }
       }
+    },
+    changePage(page) {
+      if (this.pagination.current_page != page && page <= this.pagination.last_page && page > 0) {
+        this.pagination.current_page = page;
+        this.fetchItems(page);
+      }
+    },
+    search() {
+      if (this.searchPageBack == null) {
+        // this.searchPageBack = this.pagination.current_page;
+        this.pagination.current_page = 1;
+      }
+      if (this.searchTerm == '') {
+        this.pagination.current_page = this.searchPageBack;
+        this.searchPageBack = null;
+      }
+      this.fetchItems(this.pagination.current_page);
+    },
+    notHidden(value){
+      return this.pagination.hidden_columns == null || this.pagination.hidden_columns.map(x => x).indexOf(value) === -1;
+    },
+    loadButtons(){
+      this.buttons.forEach((val,i)=>{
+        var btn =  val.split(":");
+        var valid = Object.keys(AVAILABLE_BUTTONS).indexOf(btn[0]) !==-1;
 
-    }
-    </script>
-    <style media="screen">
-    .table td.fit,
-    .table th.fit {
-      white-space: nowrap;
-      width: 1%;
-    }
-    </style>
+        if (valid) {
+          btn[1] = AVAILABLE_BUTTONS[btn[0]].places.indexOf(btn[1]) !== -1 ? btn[1] : AVAILABLE_BUTTONS[val].default_place;
+          if (btn[1] == 't') {
+            this.topButtons.push(AVAILABLE_BUTTONS[btn[0]])
+          }
+          if (btn[1] == 'r') {
+            this.rowButtons.push(AVAILABLE_BUTTONS[btn[0]])
+          }
+        }
+      });
+    },
+  }
+
+}
+</script>
+<style media="screen">
+.wrap {
+  position: relative;
+}
+#loading-wrap {
+  height: 100%;
+  width: 100%;
+  background: rgba(189, 189, 189, 0.48);
+  z-index: 2;
+  position: absolute;
+  },
+
+  .table td.fit,
+  .table th.fit {
+    white-space: nowrap;
+    width: 1%;
+  }
+
+  </style>

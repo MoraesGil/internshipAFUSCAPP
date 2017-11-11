@@ -13,4 +13,29 @@ Class BatmanBelt {
 
   const HEX_PATTERN = "^#([A-Fa-f0-9]{6}|[A-Fa-f0-9]{3})$";
 
+ 
+  // http://blog.clares.com.br/php-mascara-cnpj-cpf-data-e-qualquer-outra-coisa/
+  public static function mask($val, $mask) {
+    $val = str_replace(".","",$val);
+    $val = str_replace("-","",$val);
+
+    $maskared = '';
+    $k = 0;
+    for($i = 0; $i<=strlen($mask)-1; $i++)
+    {
+      if($mask[$i] == '#')
+      {
+        if(isset($val[$k]))
+        $maskared .= $val[$k++];
+      }
+      else
+      {
+        if(isset($mask[$i]))
+        $maskared .= $mask[$i];
+      }
+    }
+
+    return $maskared;
+  }
+
 }
