@@ -18,15 +18,18 @@ class Associado extends CustomModel {
     [
       'label' => '#',
       'name'=>'id',
-      'search'=>true
+      'search'=>true,
+      'prefix'=>'p'
     ],
     [
       'name'=>'nome',
-      'search'=>true
+      'search'=>true,
+      'prefix'=>'p'
     ],
     [
       'name'=>'apelido',
-      'search'=>true
+      'search'=>true,
+      'prefix'=>'p'
     ],
     [
       'name'=>'foto',
@@ -37,33 +40,37 @@ class Associado extends CustomModel {
     [
       'label' => 'C.P.F.',
       'name'=>'cpf',
-      'search'=>true
+      'search'=>true,
+      'prefix'=>'f'
     ],
     [
       'label' => 'R.G.',
       'name'=>'rg',
-      'search'=>true
+      'search'=>true,
+      'prefix'=>'f'
     ],
     [
       'name'=>'data_nascimento',
-      'search'=>true
+      'search'=>true,
+      'prefix'=>'f'
     ],
     [
       'name'=>'cracha',
-      'search'=>true
+      'search'=>true,
+      'prefix'=>'a'
     ],
     [
       'name'=>'devedor',
     ],
     [
       'name'=>'padrinho_id',
-      'search'=>true
+      'search'=>true,
+      'prefix'=>'a'
     ],
     [
-      'name'=>'padrinho_nome',
-      'search'=>true
+      'name'=>'padrinho_nome', 
     ],
-  ]; 
+  ];
 
   protected $fillable = ['cracha'];
   protected $primaryKey = 'pessoa_id';

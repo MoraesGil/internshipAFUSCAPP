@@ -37,10 +37,11 @@ class AssociadosSeeder extends Seeder {
           // 'foto'    => $faker->boolean(1) ? $faker->image($filepath,80,80, 'people', false) : null,
           'ativo'   => $faker->boolean(98),
         ])
+
         ->pessoaFisica()->create([
-          'cpf'=>$faker->numerify($string = '#########'),
-          'rg'=>$faker->numerify($string = '############'),
-          'data_nascimento'=>$faker->dateTimeThisCentury
+          'rg'=>$faker->numerify($string = '#########'),
+          'cpf'=>$faker->numerify($string = '###########'),
+          'data_nascimento'=>$faker->dateTimeThisCentury->format('Y-m-d')
         ])
         ->pessoa;
 
@@ -57,14 +58,14 @@ class AssociadosSeeder extends Seeder {
         $pes->associado()
         ->create([
           'cracha'      => !$isExterno ? $faker->numerify($string = '####') : null,
-          'padrinho_id' => $isExterno ? $padrinhoId : null 
+          'padrinho_id' => $isExterno ? $padrinhoId : null
         ]);
 
         DB::commit();
       } catch (Exception $e) {
         // dump($isExterno ? 'Associado Externo':'Associado Interno');
-        // dump($e->getMessage());
-        // dump('rollback');
+        dump($e->getMessage());
+        dump('rollback');
         DB::rollback();
       }
     }

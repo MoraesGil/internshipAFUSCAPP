@@ -63,7 +63,7 @@ trait DataViewer {
         if (isset($config['name'])) {
           $this->dv_columns[$config['name']] = isset($config["label"]) ? $config["label"] : str_replace('_',' ', title_case($config['name']));
           if (isset($config["search"]) && $config["search"] == true && !in_array($config['name'], $this->dv_searchableColumns))
-          $this->dv_searchableColumns[]= $config['name'];
+          $this->dv_searchableColumns[]= isset($config['prefix']) ? $config['prefix'].'.'.$config['name'] : $config['name'];
         }
       }
     }
@@ -79,7 +79,7 @@ trait DataViewer {
       $configColumns = collect($this->dv_config)->pluck('name')->filter(function($value, $key){
         return  $value != null ;
       })->toArray();
-      if (is_object($columns)) { 
+      if (is_object($columns)) {
         $columns = collect($columns)->toArray();
       }
       $columns = array_merge(array_flip($configColumns), $columns);

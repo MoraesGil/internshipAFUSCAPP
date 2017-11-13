@@ -8,7 +8,7 @@ use App\Helper\Traits\DataViewer;
 class Pessoa extends CustomModel {
   use SoftDeletes, DataViewer;
 
-  protected $table ='pessoas p';
+  protected $table ='pessoas';
   protected $fillable = ['nome', 'apelido', 'foto', 'ativo'];
   protected $dates = ['criado_em','excluido_em','dt_vencimento'];
 
@@ -54,6 +54,6 @@ class Pessoa extends CustomModel {
   }
 
 
-  
+
 
 }

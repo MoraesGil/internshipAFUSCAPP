@@ -9,7 +9,7 @@
       </template>
       <div class="clearfix"></div>
     </div>
-    <div class="x_content">
+    <div class="x_content" style="min-height:90px">
 
       <div class="row">
         <div class="col-md-10 col-sm-8 col-xs-9 form-group has-feedback">
@@ -67,7 +67,7 @@
           </table>
         </div>
       </div>
-      <hr>
+      <!-- <hr>  -->
       <!-- BEGIN FOOTER -->
       <div class="footer pull-right">
         <nav v-if="pagination.total > 0 &&  pagination.last_page>1">
@@ -202,44 +202,6 @@ export default {
     }
   },
   computed: {
-    buttonClick(btn,row){
-      if (row) {
-        var par = _.merge(row,
-          {
-            primary: row[this.pagination.primary],
-            title:   row[this.pagination.title_column] || 'Cód: '+row[this.pagination.primary]
-          });
-        }
-        switch (btn.label) {
-          case AVAILABLE_BUTTONS['add'].label: {
-            this.$emit('add')
-          }
-          break;
-          case AVAILABLE_BUTTONS['delete'].label: {
-            this.$emit('delete',par)
-          }
-          break;
-          case AVAILABLE_BUTTONS['detail'].label: {
-            this.$emit('detail',par)
-          }
-          break;
-          case AVAILABLE_BUTTONS['download'].label: {
-            this.$emit('download',par)
-          }
-          break;
-          case AVAILABLE_BUTTONS['edit'].label: {
-            this.$emit('edit',par)
-          }
-          break;
-          case AVAILABLE_BUTTONS['print'].label: {
-            this.$emit('print',par)
-          }
-          break;
-
-          default:
-            break;
-          }
-        },
     hasOptionsRow(){
       return this.validOptionsRow.length>0;
     },
@@ -291,7 +253,44 @@ export default {
     },
   },
   methods: {
+    buttonClick(btn,row){
+      if (row) {
+        var par = _.merge(row,
+          {
+            primary: row[this.pagination.primary],
+            title:   row[this.pagination.title_column] || 'Cód: '+row[this.pagination.primary]
+          });
+        }
+        switch (btn.label) {
+          case AVAILABLE_BUTTONS['add'].label: {
+            this.$emit('add')
+          }
+          break;
+          case AVAILABLE_BUTTONS['delete'].label: {
+            this.$emit('delete',par)
+          }
+          break;
+          case AVAILABLE_BUTTONS['detail'].label: {
+            this.$emit('detail',par)
+          }
+          break;
+          case AVAILABLE_BUTTONS['download'].label: {
+            this.$emit('download',par)
+          }
+          break;
+          case AVAILABLE_BUTTONS['edit'].label: {
+            this.$emit('edit',par)
+          }
+          break;
+          case AVAILABLE_BUTTONS['print'].label: {
+            this.$emit('print',par)
+          }
+          break;
 
+          default:
+            break;
+          }
+    },
     clickSearchButton(event) {
       if (event.target.tagName != "BUTTON") {
         if (this.autoSearch) {
