@@ -8,6 +8,9 @@ if (token) {
 } else {
   console.error('CSRF token not found: https://laravel.com/docs/csrf#csrf-x-csrf-token');
 }
+ 
+import VueTheMask from 'vue-the-mask'
+Vue.use(VueTheMask)
 
 /**
 * GM - My mixin loads commun data to all my components
@@ -16,7 +19,7 @@ if (token) {
 const eventHub = new Vue() // Single event hub
 Vue.mixin({
   mounted: function () {
-    // console.log('mixin loaded de boas'+this._uid); 
+    // console.log('mixin loaded de boas'+this._uid);
   },
   data: function () {
     return {

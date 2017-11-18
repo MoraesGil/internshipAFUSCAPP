@@ -352,7 +352,7 @@ export default {
   background: rgba(189, 189, 189, 0.48);
   z-index: 2;
   position: absolute;
-  },
+  }
 
   .table td.fit,
   .table th.fit {

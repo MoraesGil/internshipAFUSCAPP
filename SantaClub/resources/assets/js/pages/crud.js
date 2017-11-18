@@ -24,7 +24,7 @@ new Vue({
       entity : {},
     }
   },
-  mounted(){ 
+  mounted(){
     this.resourceUrl = $("#resourceUrl").val();
     this.eventHub.$on('savedChanges',this.savedChanges);
   },

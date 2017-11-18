@@ -6,7 +6,10 @@ use DB;
 class Associado extends CustomModel {
   use DataViewer;
 
+  protected $dv_title_column ='nome';
+
   private $dv_hidden = [
+    'pessoa_id',
     'padrinho_id',
     'devedor',
     'foto',
@@ -68,7 +71,7 @@ class Associado extends CustomModel {
       'prefix'=>'a'
     ],
     [
-      'name'=>'padrinho_nome', 
+      'name'=>'padrinho_nome',
     ],
   ];
 
@@ -89,14 +92,16 @@ class Associado extends CustomModel {
 
 
   public static function tableData(){
+
     return DB::table('pessoas as p')
     ->join('associados as a','p.id', '=', 'a.pessoa_id','left outer')
     ->join('fisicas as f', 'p.id', '=', 'f.pessoa_id','left outer')
     ->join('pessoas as pad','pad.id', '=', 'a.padrinho_id','left outer')
     ->select('p.id', 'p.nome', 'p.apelido', 'p.foto', 'p.ativo',
      'f.cpf', 'f.rg', DB::raw('DATE_FORMAT(f.data_nascimento,"%d/%m/%Y") as data_nascimento'),
-     'a.cracha', 'a.devedor', 'a.padrinho_id',
-     'pad.nome as padrinho_nome');
+     'a.pessoa_id','a.cracha', 'a.devedor', 'a.padrinho_id',
+     'pad.nome as padrinho_nome')
+     ->where('p.excluido_em',null);
   }
 
   public function getDataNascimentoAttribute($value)
