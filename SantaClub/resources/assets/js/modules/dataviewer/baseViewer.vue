@@ -16,11 +16,7 @@ export default {
     searchable: {
       type: Boolean,
       default: true
-    },
-    title: {
-      type: String,
-      default: 'Title'
-    },
+    }, 
     otherFilters: {
       type: Array,
       default: function() {
