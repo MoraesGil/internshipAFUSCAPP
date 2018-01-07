@@ -27,117 +27,110 @@
 </template>
 
 <script>
-import DataViewer    from '../dataviewer/gridViewer.vue'
-import FormCategoria from '../../forms/form_categoria.vue'
-import FormConta     from '../../forms/form_conta.vue'
+import DataViewer from "../dataviewer/gridViewer.vue";
+import FormCategoria from "../../forms/form_categoria.vue";
+import FormConta from "../../forms/form_conta.vue";
+import FormAssociado from "../../forms/form_associado.vue";
 
 export default {
   data() {
     return {
-      modalSize:'md',
-      form_modal : false,
-      entity : {},
-    }
+      modalSize: "md",
+      form_modal: false,
+      entity: {}
+    };
   },
-  components:{
+  components: {
     DataViewer,
     // ## note the form name must be resource route name ex: cat.categorias to form Categoria
-    'cat.categorias': FormCategoria,
-    'con.contas':     FormConta
+    "cat.categorias": FormCategoria,
+    "con.contas": FormConta,
+    "ass.associados": FormAssociado
   },
   props: {
     resourceName: {
       type: String,
-      default: ''
+      default: ""
     },
     title: {
       type: String,
-      default: 'Title'
+      default: "Title"
     },
     topButtons: {
       type: Array,
       default: function() {
-        return []
+        return [];
       }
     },
     rowButtons: {
       type: Array,
       default: function() {
-        return []
+        return [];
       }
-    }, 
-    resourceUrl:{
-      type: String,
-      default: ''
     },
+    resourceUrl: {
+      type: String,
+      default: ""
+    }
   },
   mounted() {
-    this.eventHub.$on('add',this.create)
-    this.eventHub.$on('edit',this.edit)
-    this.eventHub.$on('delete',this.destroy)
+    this.eventHub.$on("add", this.create);
+    this.eventHub.$on("edit", this.edit);
+    this.eventHub.$on("delete", this.destroy);
     // this.loadButtons();
     // this.eventHub.$on('refreshgridViewer', this.fetchItems);
   },
-  destroyed: function() {
-
-  },
-  computed: {
-
-  },
-  watch: {
-
-  },
+  destroyed: function() {},
+  computed: {},
+  watch: {},
   methods: {
-    create(){
-      this.entity     = null;
+    create() {
+      this.entity = null;
       this.form_modal = true;
     },
-    edit(par){
+    edit(par) {
       if (par.primary != null) {
         this.entity = par;
         this.form_modal = true;
-      }else {
-        console.log('Unknow PrimaryKey Field');
+      } else {
+        console.log("Unknow PrimaryKey Field");
       }
     },
-    saveChanges(){
+    saveChanges() {
       this.form_modal = false;
-      this.eventHub.$emit('refreshgridViewer');
-      this.eventHub.$emit('saveChanges');
+      this.eventHub.$emit("refreshgridViewer");
+      this.eventHub.$emit("saveChanges");
     },
     destroy(par) {
-      var delete_url = this.resourceUrl+'/'+par.primary;
+      var delete_url = this.resourceUrl + "/" + par.primary;
       let self = this;
       swal({
-        cancelButtonColor:   '#d33',
-        cancelButtonText:    'Cancelar',
-        confirmButtonText:   'Sim',
-        showCancelButton:    true,
+        cancelButtonColor: "#d33",
+        cancelButtonText: "Cancelar",
+        confirmButtonText: "Sim",
+        showCancelButton: true,
         showLoaderOnConfirm: true,
-        html:                "Confirma exclusão do item: <strong>"+par.title+"</strong> ?",
-        title:               'Atenção',
-        type:                'warning',
-      }).then(function () {
-        axios.delete(delete_url).then((res) => {
-          self.eventHub.$emit('refreshgridViewer');
-          toastr.success(par.title+' foi excluído com sucesso.');
-        },(res) => {
-          console.log(res);
-          self.showResponseError(res)
-        });
-      }) //end swal
+        html: "Confirma exclusão do item: <strong>" + par.title + "</strong> ?",
+        title: "Atenção",
+        type: "warning"
+      }).then(function() {
+        axios.delete(delete_url).then(
+          res => {
+            self.eventHub.$emit("refreshgridViewer");
+            toastr.success(par.title + " foi excluído com sucesso.");
+          },
+          res => {
+            console.log(res);
+            self.showResponseError(res);
+          }
+        );
+      }); //end swal
     },
-    show(){
-    },
-    report(){
-
-    },
-    download(){
-
-    }
+    show() {},
+    report() {},
+    download() {}
   }
-}
-
+};
 </script>
 <style media="screen">
 
