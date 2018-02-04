@@ -6,7 +6,7 @@
 */
 import axios from 'axios'
 import _ from 'lodash'
-
+require('../../mixins.js')
 export default {
   props: {
     source: {
@@ -16,7 +16,7 @@ export default {
     searchable: {
       type: Boolean,
       default: true
-    }, 
+    },
     otherFilters: {
       type: Array,
       default: function() {

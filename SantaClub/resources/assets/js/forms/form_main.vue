@@ -4,6 +4,7 @@
 * @type {Object}
 */
 export default {
+  mixins: [mixinHub,mixinResponse],
   components: {
 
   },
@@ -19,11 +20,10 @@ export default {
   },
   mounted() {
     this.dataForm  = this.mergeEntity(this.dataForm, this.entitySrc)
-    this.eventHub.$on('saveChanges',this.sendForm);
-
+    this.eventHub.$on('triggerForm',this.sendForm);
   },
   destroyed: function() {
-    this.eventHub.$off('saveChanges');
+    this.eventHub.$off('triggerForm');
   },
   data() {
     return {
@@ -54,27 +54,27 @@ export default {
         toastr.clear();
         self = this
         try {
-          if (this.entitySrc ==null) {
+          if (this.entitySrc == null) {
             axios.post(this.targetUrl, this.dataForm)
             .then((res) => {
               this.eventHub.$emit('savedChanges')
-               toastr.success('Cadastrado com sucesso')
+              toastr.success('Cadastrado com sucesso')
             })
             .catch((e) => {
-               self.showResponseError(e)
+              self.showResponseError(e.response)
             })
           }else {
             axios.put(this.targetUrl+'/'+this.entitySrc.primary, this.dataForm)
             .then(res => {
               this.eventHub.$emit('savedChanges')
-               toastr.success('Atualizado com sucesso')
+              toastr.success('Atualizado com sucesso')
             })
             .catch((e) => {
-               self.showResponseError(e)
+              self.showResponseError(e.response)
             })
           }
         } catch (ex) {
-         console.log(ex);
+          console.log(ex);
         }
       },
       200

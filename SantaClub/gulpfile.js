@@ -50,7 +50,6 @@ elixir((mix) => {
   // cacheBusting
   mix.version([
     'public/css/vendor.css',
-    'public/js/main.js',
     'public/js/vendor.js',
   ])
 
