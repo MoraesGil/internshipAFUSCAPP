@@ -4,17 +4,17 @@ use Illuminate\Support\Facades\Schema;
 use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Database\Migrations\Migration;
 
-class CreateUsersTable extends Migration
+class CreateValeGastosTable extends Migration
 {
     /**
      * Schema table name to migrate
      * @var string
      */
-    public $set_schema_table = 'users';
+    public $set_schema_table = 'vale_gastos';
 
     /**
      * Run the migrations.
-     * @table users
+     * @table vale_gastos
      *
      * @return void
      */
@@ -24,20 +24,23 @@ class CreateUsersTable extends Migration
         Schema::create($this->set_schema_table, function (Blueprint $table) {
             $table->engine = 'InnoDB';
             $table->increments('id');
-            $table->string('name');
-            $table->string('email');
-            $table->string('password');
-            $table->rememberToken();
-            $table->integer('pessoa_id')->nullable();
+            $table->integer('convenio_id');
+            $table->integer('vale_id');
+            $table->decimal('valor', 7, 2);
+            $table->date('usado_em');
 
-            $table->index(["pessoa_id"], 'fk_users_pessoas1_idx');
+            $table->index(["convenio_id"], 'fk_convenios_has_vales_convenios1_idx');
 
-            $table->unique(["email"], 'users_email_unique');
-            $table->nullableTimestamps();
+            $table->index(["vale_id"], 'fk_convenios_has_vales_vales1_idx');
 
 
-            $table->foreign('pessoa_id', 'fk_users_pessoas1_idx')
-                ->references('id')->on('pessoas')
+            $table->foreign('convenio_id', 'fk_convenios_has_vales_convenios1_idx')
+                ->references('pessoa_id')->on('convenios')
+                ->onDelete('no action')
+                ->onUpdate('no action');
+
+            $table->foreign('vale_id', 'fk_convenios_has_vales_vales1_idx')
+                ->references('id')->on('vales')
                 ->onDelete('no action')
                 ->onUpdate('no action');
         });

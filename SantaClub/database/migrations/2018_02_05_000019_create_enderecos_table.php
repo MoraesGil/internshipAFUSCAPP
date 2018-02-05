@@ -4,17 +4,17 @@ use Illuminate\Support\Facades\Schema;
 use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Database\Migrations\Migration;
 
-class CreateUsersTable extends Migration
+class CreateEnderecosTable extends Migration
 {
     /**
      * Schema table name to migrate
      * @var string
      */
-    public $set_schema_table = 'users';
+    public $set_schema_table = 'enderecos';
 
     /**
      * Run the migrations.
-     * @table users
+     * @table enderecos
      *
      * @return void
      */
@@ -24,20 +24,25 @@ class CreateUsersTable extends Migration
         Schema::create($this->set_schema_table, function (Blueprint $table) {
             $table->engine = 'InnoDB';
             $table->increments('id');
-            $table->string('name');
-            $table->string('email');
-            $table->string('password');
-            $table->rememberToken();
-            $table->integer('pessoa_id')->nullable();
+            $table->integer('pessoa_id');
+            $table->string('logradouro', 225);
+            $table->string('bairro', 100);
+            $table->string('cep', 100)->nullable();
+            $table->string('complemento', 100)->nullable();
+            $table->integer('cidade_id');
 
-            $table->index(["pessoa_id"], 'fk_users_pessoas1_idx');
+            $table->index(["cidade_id"], 'fk_enderecos_cidades1_idx');
 
-            $table->unique(["email"], 'users_email_unique');
-            $table->nullableTimestamps();
+            $table->index(["pessoa_id"], 'fk_enderecos_pessoas1_idx');
 
 
-            $table->foreign('pessoa_id', 'fk_users_pessoas1_idx')
+            $table->foreign('pessoa_id', 'fk_enderecos_pessoas1_idx')
                 ->references('id')->on('pessoas')
+                ->onDelete('cascade')
+                ->onUpdate('no action');
+
+            $table->foreign('cidade_id', 'fk_enderecos_cidades1_idx')
+                ->references('id')->on('cidades')
                 ->onDelete('no action')
                 ->onUpdate('no action');
         });

@@ -4,17 +4,17 @@ use Illuminate\Support\Facades\Schema;
 use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Database\Migrations\Migration;
 
-class CreateUsersTable extends Migration
+class CreateValesTable extends Migration
 {
     /**
      * Schema table name to migrate
      * @var string
      */
-    public $set_schema_table = 'users';
+    public $set_schema_table = 'vales';
 
     /**
      * Run the migrations.
-     * @table users
+     * @table vales
      *
      * @return void
      */
@@ -23,21 +23,20 @@ class CreateUsersTable extends Migration
         if (Schema::hasTable($this->set_schema_table)) return;
         Schema::create($this->set_schema_table, function (Blueprint $table) {
             $table->engine = 'InnoDB';
-            $table->increments('id');
-            $table->string('name');
-            $table->string('email');
-            $table->string('password');
-            $table->rememberToken();
-            $table->integer('pessoa_id')->nullable();
+            $table->increments('id')->comment('	');
+            $table->integer('associado_id');
+            $table->decimal('valor', 7, 2);
+            $table->boolean('fechado')->default('0');
+            $table->date('vencimento_em')->nullable();
+            $table->dateTime('criado_em')->nullable();
+            $table->dateTime('atualizado_em')->nullable();
+            $table->dateTime('excluido_em')->nullable();
 
-            $table->index(["pessoa_id"], 'fk_users_pessoas1_idx');
-
-            $table->unique(["email"], 'users_email_unique');
-            $table->nullableTimestamps();
+            $table->index(["associado_id"], 'fk_vales_associados1_idx');
 
 
-            $table->foreign('pessoa_id', 'fk_users_pessoas1_idx')
-                ->references('id')->on('pessoas')
+            $table->foreign('associado_id', 'fk_vales_associados1_idx')
+                ->references('pessoa_id')->on('associados')
                 ->onDelete('no action')
                 ->onUpdate('no action');
         });

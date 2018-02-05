@@ -4,17 +4,17 @@ use Illuminate\Support\Facades\Schema;
 use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Database\Migrations\Migration;
 
-class CreateUsersTable extends Migration
+class CreateUserRolesTable extends Migration
 {
     /**
      * Schema table name to migrate
      * @var string
      */
-    public $set_schema_table = 'users';
+    public $set_schema_table = 'user_roles';
 
     /**
      * Run the migrations.
-     * @table users
+     * @table user_roles
      *
      * @return void
      */
@@ -23,22 +23,22 @@ class CreateUsersTable extends Migration
         if (Schema::hasTable($this->set_schema_table)) return;
         Schema::create($this->set_schema_table, function (Blueprint $table) {
             $table->engine = 'InnoDB';
-            $table->increments('id');
-            $table->string('name');
-            $table->string('email');
-            $table->string('password');
-            $table->rememberToken();
-            $table->integer('pessoa_id')->nullable();
+            $table->increments('user_id');
+            $table->integer('role_id');
 
-            $table->index(["pessoa_id"], 'fk_users_pessoas1_idx');
+            $table->index(["user_id"], 'fk_users_has_roles_users1_idx');
 
-            $table->unique(["email"], 'users_email_unique');
-            $table->nullableTimestamps();
+            $table->index(["role_id"], 'fk_users_has_roles_roles1_idx');
 
 
-            $table->foreign('pessoa_id', 'fk_users_pessoas1_idx')
-                ->references('id')->on('pessoas')
-                ->onDelete('no action')
+            $table->foreign('user_id', 'fk_users_has_roles_users1_idx')
+                ->references('id')->on('users')
+                ->onDelete('cascade')
+                ->onUpdate('no action');
+
+            $table->foreign('role_id', 'fk_users_has_roles_roles1_idx')
+                ->references('id')->on('roles')
+                ->onDelete('cascade')
                 ->onUpdate('no action');
         });
     }
