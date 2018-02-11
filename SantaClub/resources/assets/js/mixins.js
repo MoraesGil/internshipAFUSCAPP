@@ -30,10 +30,11 @@ mixinResponse = {
             type: 'info',
             html: 'Sua sessão expirou, faça login novamente',
             allowOutsideClick: false,
+            allowEscapeKey:false,
             confirmButtonColor: '#3085d6',
             confirmButtonText: 'Fazer login'
           }).then((result) => {
-            window.location.href = loginPageUrl;
+            window.location.reload();
             console.log(loginPageUrl);
           })
           break;

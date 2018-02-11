@@ -59,7 +59,7 @@ class MovimentosTableSeeder extends Seeder {
         if (!$mov->status && $faker->boolean(95)) { //parcial re
           $data["status"] = true;
           foreach (range(1,3) as $b) {
-            $limit =  $limit =  ($mov->valor*0.9) - $mov->total_parcial; // limit 90% less sum
+            $limit =  ($mov->valor*0.9) - $mov->total_parcial; // limit 90% less sum
             do {
               $parcialValue = $faker->randomFloat(2,1,$limit); //get random parcial value by limit
             } while ($parcialValue <= 0);

@@ -20,14 +20,14 @@ import VueTheMask from 'vue-the-mask'
 Vue.use(VueTheMask)
 
 import * as uiv from 'uiv'
-Vue.use(uiv, {prefix: 'uiv'})
+Vue.use(uiv, {prefix: 'uiv'}) 
 
 /**
 * GM - Global Components
 *  = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = =
 */
 
-import dbutton from './Buttons/dinamicButton.vue'
+import dbutton from './modules/dataviewer/dinamicButton.vue'
 Vue.component('dbutton', dbutton);
 
 /**

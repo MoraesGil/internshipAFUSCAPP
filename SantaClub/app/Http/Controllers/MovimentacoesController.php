@@ -29,6 +29,7 @@ class MovimentacoesController extends Controller {
    * @return \Illuminate\Http\Response
    */
   private function getData(Request $request){
+    return $this->Model->DataViewerData($request);
     return response()->json(
       $this->Model->DataViewerData($request,$this->Model->movimentacoes()->with('categoria'),50,false)
       ,200

@@ -38,6 +38,7 @@ class Handler extends ExceptionHandler
   /**
   * Render an exception into an HTTP response.
   *
+  * @author Gilberto Prudêncio Vaz de Moraes <moraesdev@gmail.com>
   * @param  \Illuminate\Http\Request  $request
   * @param  \Exception  $exception
   * @return \Illuminate\Http\Response
@@ -48,10 +49,17 @@ class Handler extends ExceptionHandler
     $trace = $exception->getTrace()[0]['class'];
     $msg = 'msg->'.$exception->getMessage().' | trace-> '.$trace;
 
-    //@author Gilberto Prudêncio Vaz de Moraes <moraesdev@gmail.com>
+    if ($exception->getMessage() == 'Unauthenticated.' || $trace == 'Illuminate\Foundation\Http\Middleware\VerifyCsrfToken') {
+      $status = 401;
+    }
+
     if ($request->expectsJson()) {
-      if ($this->isHttpException($exception)) {
-        $status = $exception->getStatusCode();
+
+      if ($status == 401) {
+        return response()->json([
+          'message' => 'Autenticação requerida.',
+          'errors'  => 'Sua sessão expirou, faça login novamente'
+        ], $status);
       }
 
       if (env('APP_DEBUG') === false) {
@@ -64,7 +72,11 @@ class Handler extends ExceptionHandler
           'errors'  => [$msg]
         ], $status);
       }
-      
+
+    }
+
+    if ($status == 401) {
+      return redirect()->guest('login');
     }
 
     return parent::render($request, $exception);

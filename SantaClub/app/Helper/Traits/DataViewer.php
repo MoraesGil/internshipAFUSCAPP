@@ -9,17 +9,12 @@
 */
 namespace App\Helper\Traits;
 
-use Validator;
-
 trait DataViewer
 {
     private $dv_columns           = null;
     private $dv_searchableColumns = [];
-
-    private $validator_messages     = [
-    'column.in' => 'Nome de coluna inválida',
-    'direction.in' => 'A direção precisa ser asc ou desc',
-  ];
+    private $rowOptions = ['edit','delete'];
+    private $topOptions = ['add'];
 
     /**
     * [gm - loadQueryColumns]
@@ -113,7 +108,7 @@ trait DataViewer
     * @param [Illuminate/Database/Query/Builder]  $query    [optional custom querybuilder]
     * @param boolean $paginate [default true]
     */
-    public function DataViewerData($request, $query = null, $paginate = 15, $mergeColumns = true)
+    public function dataViewerData($request, $query = null, $paginate = 15, $mergeColumns = true)
     {
         if (!isset($this->dv_config) || $this->dv_config === []) {
             $this->loadQueryColumns($query);
@@ -128,19 +123,6 @@ trait DataViewer
             $query = parent::newQuery();
         }
         $db_driver = $query->getConnection()->getDriverName();
-        $v =  Validator::make($request->only([
-      'column',
-      'direction',
-      'search_term'
-    ]), [
-      'order_column' =>'nullable|alpha_dash|in:'.implode(',', $this->dv_columns),
-      'order_direction'=>'nullable|in:asc,desc',
-      'search_term'=>'nullable',
-    ], $this->validator_messages);
-
-        if ($v->fails()) {
-            return $v->errors()->all();
-        }
 
         $searchTerm     = strtolower($request->search_term ? $request->search_term:"");
 
@@ -169,4 +151,21 @@ trait DataViewer
         // dd($query->toSql()); //uncoment this to see sql
         return $paginate && $mergeColumns ? $this->mergeDataViwerExtraColumns($query->paginate($paginate)) : $query;
     }
+
+    public function dataViewerOptions(){
+        return [
+            'row' => $this->rowOptions,
+            'top' => $this->topOptions
+        ];
+    }
+
+    public function setDataViewerRowOptions($array){
+        $this->rowOptions = $array;
+    }
+    public function setDataViewerTopOptions($array){
+        $this->topOptions = $array;
+    }
+
+
+
 }

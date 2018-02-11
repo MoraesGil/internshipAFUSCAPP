@@ -4,9 +4,11 @@
 * @author Gilberto Prudêncio Vaz de Moraes <moraesdev@gmail.com>
 * @type {Vue Component}
 */
+require('../../mixins.js')
 import axios from 'axios'
 import _ from 'lodash'
-require('../../mixins.js')
+
+
 export default {
   props: {
     source: {
@@ -136,7 +138,7 @@ export default {
         self.pagination = res.data;
       }).catch((err) => {
         this.isLoading = false;
-        self.showResponseError(err); //Mixin
+        self.showResponseError(err.response); //Mixin
       });
     },
     infiniteHandler($state,scrollableId = null){

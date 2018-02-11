@@ -8,7 +8,7 @@
       <div class="col-md-2 col-sm-4 col-xs-3 form-group has-feedback">
         <button type="button" name="button" class="btn btn-block btn-default" v-on:click="clickSearchButton($event)">
           <input type="checkbox" checked data-toggle="tooltip" title="Filtrar automaticamente" v-model="autoSearch" class="pull-left" />
-          <i class="fa fa-search"></i> buscar
+          <i class="fa fa-search"></i> Buscar
         </button>
       </div>
     </div>
@@ -32,7 +32,7 @@
                 </th>
               </template>
               <template v-if="buttons.length>0">
-                <th class="fit"> opções <i class="fa fa-gear fa-fw"></i> </th>
+                <th class="fit"> Opções <i class="fa fa-gear fa-fw"></i> </th>
               </template>
             </tr>
           </thead>
@@ -92,6 +92,7 @@
 import BaseViewer from './baseViewer.vue'
 export default {
   extends: BaseViewer,
+  mixins: [mixinHub,mixinPermission,mixinResponse],
   props: {
     buttons: {
       type: Array,

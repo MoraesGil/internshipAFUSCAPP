@@ -18,9 +18,12 @@ export default {
       default: null
     },
   },
-  mounted() {
+  created : function() {
     this.dataForm  = this.mergeEntity(this.dataForm, this.entitySrc)
     this.eventHub.$on('triggerForm',this.sendForm);
+  },
+  mounted() {
+    
   },
   destroyed: function() {
     this.eventHub.$off('triggerForm');
@@ -28,22 +31,22 @@ export default {
   data() {
     return {
       dataForm:{},
-      errors: []
     }
   },
   computed: {
-    hasErrors () {
-      return this.errors.errors.length > 0
-    },
     formId(){
       return 'gm_crud_form_'+this._uid
     },
+    isEditing(){
+      return this.entitySrc != null
+    }
   },
   watch: {
 
   },
   methods: {
     mergeEntity(obj1, obj2) {
+      console.log('rodou merge form')
       for( var p in obj2 )
       if( obj1.hasOwnProperty(p) )
       obj1[p] = typeof obj2[p] === 'object' ? merge(obj1[p], obj2[p]) : obj2[p];

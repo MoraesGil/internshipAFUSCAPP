@@ -36,7 +36,11 @@ trait ResourceTrait {
       if (!$this->resourceName) {
         dd('set resource name');
       }
-      return view($this->indexView,['pageTitle'=>$this->pageTitle,'resourceName'=>$this->resourceName]);
+      return view($this->indexView,[
+        'pageTitle'         => $this->pageTitle,
+        'resourceName'      => $this->resourceName,
+        'dataViewerOptions' => $this->Model->dataViewerOptions(),
+      ]);
     }
   }
 
@@ -68,7 +72,7 @@ trait ResourceTrait {
   * @param  \Illuminate\Http\Request  $request
   * @return \Illuminate\Http\Response
   */
-  public function store(Request $request) { 
+  public function store(Request $request) {
     if ($this->Model->hasRules()) {
       if (!$this->Model->validate($request->all())) {
         if ($request->expectsJson()) {
