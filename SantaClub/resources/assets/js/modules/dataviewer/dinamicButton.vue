@@ -1,7 +1,9 @@
 <template lang="html">
-  <a :class="'btn '+styleClass+' dbutton '" @click.prevent="click()" type="primary" v-if="visible">
-    <i :class="icon+' fa-fw'"></i> {{computedLabel}}
-  </a>
+  <tooltip :text="label" :enable="mini">
+    <a :class="'btn '+styleClass+' dbutton '" @click.prevent="click()" type="primary" v-if="visible">
+      <i :class="icon+' fa-fw'"></i> {{computedLabel}}
+    </a>
+  </tooltip>
 </template>
 
 <script>
@@ -90,27 +92,20 @@ export default {
 
       rules.split("|").forEach(function (item) {
         let rule = item.split(",")
-
         switch (rule[1]) {
-          case 'true':
-          rule[1] = true;
-          break;
-          case 'false':
-          rule[1] = false;
-          break;
-
-          default:
+          case 'true':  rule[1] = true; break;
+          case 'false': rule[1] = false; break;
+          default: break;
 
         }
-        // console.log(rule)
-        console.log(self.parameter[rule[0]])
-        console.log(rule[1])
-        console.log(self.parameter[rule[0]] === rule[1])
+
         if(self.parameter[rule[0]] == rule[1]){
           self.visible = false
         }
+
       })
-    }  
+
+    }
   },
   data() {
     return {
