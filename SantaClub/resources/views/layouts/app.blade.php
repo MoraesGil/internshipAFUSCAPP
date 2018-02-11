@@ -11,9 +11,17 @@
   <link href="{{ elixir('css/vendor.css')}}" rel="stylesheet">
 
   <style media="screen">
-    .menu_section:last-child {
-      margin-bottom: 0px
-    }
+  .menu_section:last-child {
+    margin-bottom: 0px
+  }
+  body.swal2-shown > div.container.body {
+    -webkit-filter: blur(5px);
+    -moz-filter: blur(5px);
+    -o-filter: blur(5px);
+    -ms-filter: blur(5px);
+    filter: blur(5px);
+  }
+
   </style>
 
   @stack('css')

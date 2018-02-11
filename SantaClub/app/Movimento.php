@@ -62,11 +62,9 @@ class Movimento extends CustomModel {
   public function getDtVencimentoAttribute($value) {
     return Carbon::parse($value)->format('d/m/Y');
   }
-  public function getValorAttribute($value) {
-    return "R$ ".number_format($value, 2, ',', '.');
-  }
+
   public function getSomaParcialAttribute() {
-    return "R$ ".number_format($this->parciais()->sum('valor'), 2, ',', '.');
+    $this->parciais()->sum('valor');
   }
 
   public static function movimentacoes() {

@@ -124,7 +124,7 @@
                 </span>
                 </div>
                 <div :class="valueColumnSize">
-                  {{mov.valor}}
+                  R$ {{mov.valor}}
                 </div>
                 <div :class="[optionsColumnSize,(!miniMode ? 'end': '')]">
                   <a href="#"><i class="fa fa-thumbs-o-up fa-fw  "></i></a>
@@ -175,7 +175,7 @@
 </template>
 
 <script>
-import InfinityViewer      from '../DataViewer/infinityViewer.vue'  
+import InfinityViewer      from '../DataViewer/infinityViewer.vue'
 import { Popover }     from 'uiv'
 
 /**

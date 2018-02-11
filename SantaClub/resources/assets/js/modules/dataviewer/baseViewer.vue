@@ -10,6 +10,7 @@ import _ from 'lodash'
 
 
 export default {
+  mixins: [mixinResponse],
   props: {
     source: {
       type: String,
@@ -136,10 +137,11 @@ export default {
       axios.get(self.SourceUrl).then((res) => {
         this.isLoading = false;
         self.pagination = res.data;
-      }).catch((err) => {
+      })
+      .catch((e) => {
         this.isLoading = false;
-        self.showResponseError(err.response); //Mixin
-      });
+        self.showResponseError(e.response)
+      })
     },
     infiniteHandler($state,scrollableId = null){
       var self = this;
@@ -161,8 +163,8 @@ export default {
               }, 120);
             }
           }
-        },(res_e)=>{
-          self.showResponseError(res_e);
+        },(e)=>{
+          self.showResponseError(e.response)
         });
       }, 1000)
     },

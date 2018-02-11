@@ -34,8 +34,7 @@ mixinResponse = {
             confirmButtonColor: '#3085d6',
             confirmButtonText: 'Fazer login'
           }).then((result) => {
-            window.location.reload();
-            console.log(loginPageUrl);
+            window.location.reload(); 
           })
           break;
         case 403:
