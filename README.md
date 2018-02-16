@@ -6,7 +6,7 @@ I have updaloaded all docs about it and yeap the Docs File is all at Brazilian P
 
 this project have a:
 - Diagram Use Case by Astah
-- DataBase Modeling by MysqlWorkbench
+- DataBase Modeling by MysqlWorkbench (i have exported migrations from plugin take a look)
 - Mockup by balsamiq 3
 - Laravel 5.4 Project
 
