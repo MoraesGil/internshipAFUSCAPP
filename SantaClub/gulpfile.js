@@ -5,8 +5,10 @@ require('laravel-elixir-vue-2');
 
 elixir((mix) => {
 
+  mix //begin of mix
+  .webpack('./resources/assets/js/main.js')
 
-  mix.styles([
+  .styles([
 
     './node_modules/gentelella/vendors/bootstrap/dist/css/bootstrap.min.css',
     './node_modules/gentelella/vendors/nprogress/nprogress.css',
@@ -41,8 +43,7 @@ elixir((mix) => {
     './node_modules/sweetalert2/dist/sweetalert2.js',
     './node_modules/toastr/build/toastr.min.js',
     './node_modules/bootstrap-select/dist/js/bootstrap-select.js',
-    './node_modules/jquery-slimscroll/jquery.slimscroll.js'
-
+    './node_modules/jquery-slimscroll/jquery.slimscroll.js',
   ],'public/js/vendor.js')
 
   .copy([
@@ -56,9 +57,12 @@ elixir((mix) => {
   ], 'public/build/fonts')
 
 
-  mix.webpack('./resources/assets/js/pages/dashboard.js')
+  // Pages
+
+  .webpack('./resources/assets/js/pages/dashboard.js')
   .webpack('./resources/assets/js/pages/crud.js')
   .webpack('./resources/assets/js/pages/movimentacoes.js')
+
   .version([
     'public/js/dashboard.js',
     'public/js/crud.js',
@@ -66,7 +70,7 @@ elixir((mix) => {
   ])
 
   // cacheBusting
-  mix.version([
+  .version([
     'public/css/vendor.css',
     'public/js/vendor.js',
   ])

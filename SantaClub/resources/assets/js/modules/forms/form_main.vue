@@ -23,7 +23,7 @@ export default {
     this.eventHub.$on('triggerForm',this.sendForm);
   },
   mounted() {
-    
+
   },
   destroyed: function() {
     this.eventHub.$off('triggerForm');
@@ -45,8 +45,7 @@ export default {
 
   },
   methods: {
-    mergeEntity(obj1, obj2) {
-      console.log('rodou merge form')
+    mergeEntity(obj1, obj2) { 
       for( var p in obj2 )
       if( obj1.hasOwnProperty(p) )
       obj1[p] = typeof obj2[p] === 'object' ? merge(obj1[p], obj2[p]) : obj2[p];

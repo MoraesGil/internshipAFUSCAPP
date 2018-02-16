@@ -16,11 +16,15 @@ if (token) {
 * GM - Directives injection
 *  = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = =
 */
+
 import VueTheMask from 'vue-the-mask'
 Vue.use(VueTheMask)
 
+import money from 'v-money'
+Vue.use(money, {precision: 4})
+
 import * as uiv from 'uiv'
-Vue.use(uiv, {prefix: 'uiv'}) 
+Vue.use(uiv, {prefix: 'uiv'})
 
 /**
 * GM - Global Components

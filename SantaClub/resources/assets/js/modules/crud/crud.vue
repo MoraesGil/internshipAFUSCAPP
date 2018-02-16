@@ -31,9 +31,7 @@ import DataViewer    from '../dataviewer/gridViewer.vue'
 //Avaliable forms
 import FormCategoria from '../forms/form_categoria.vue'
 import FormConta     from '../forms/form_conta.vue'
-// import FormUsuarios  from '../forms/form_usuarios.vue'
-// import FormGrupos    from '../forms/form_grupos.vue'
-
+import FormAssociado from '../forms/form_associado.vue'
 
 export default {
   mixins: [mixinHub,mixinResponse],
@@ -47,10 +45,9 @@ export default {
   components:{
       DataViewer,
     // ## note the form name must be resource route name less dots ex: catcategorias to form Categoria
-    'catcategorias':    FormCategoria,
-    'concontas':        FormConta,
-    // 'usuariosapiusers': FormUsuarios,
-    // 'usuariosapiroles': FormGrupos
+    'catcategorias': FormCategoria,
+    'concontas':     FormConta, 
+    'assassociados': FormAssociado,
   },
   props: {
     resourceName: {
