@@ -19,7 +19,10 @@ i'm working to turn it more dinamic with relashion tables
 The Crud System works by combination of ResourceTrait for Controller, DataViwerTrait for model, and ValidationTrait to model Valid the resouce data received
 All my custom Traits can be found in App/Helpers/Traits
 
-i have a short video in Br of dataviewer in 
+i have a short example video in 
+https://youtu.be/RN2jFk0ppWg
+
+and another example in portuguese audio 
 https://www.youtube.com/watch?v=GBriNQQBQyE&t=48s
 
 thanks everyone Enjoy
